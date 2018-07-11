@@ -14,6 +14,7 @@ class Result extends ui.ResultUI{
         this.btn_exit.on(Laya.Event.CLICK, this, this.btnExitClick);
 
         this.addPlayerList(userList);
+        ErrorNote.getInstance.addListen(this);
         this.showInfo();
     }
 

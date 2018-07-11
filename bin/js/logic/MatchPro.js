@@ -21,6 +21,7 @@ var MatchPro = /** @class */ (function (_super) {
     MatchPro.prototype.initView = function () {
         this.btn_exit.on(Laya.Event.CLICK, this, this.btnExitClick);
         this.btn_ok.on(Laya.Event.CLICK, this, this.btnOkClick);
+        ErrorNote.getInstance.addListen(this);
     };
     /**
      *

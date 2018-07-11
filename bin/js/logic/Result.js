@@ -22,6 +22,7 @@ var Result = /** @class */ (function (_super) {
     Result.prototype.initView = function (userList) {
         this.btn_exit.on(Laya.Event.CLICK, this, this.btnExitClick);
         this.addPlayerList(userList);
+        ErrorNote.getInstance.addListen(this);
         this.showInfo();
     };
     Result.prototype.addPlayerList = function (userList) {

@@ -10,6 +10,7 @@ class MatchPro extends ui.MatchProUI{
     private initView(){
         this.btn_exit.on(Laya.Event.CLICK,this, this.btnExitClick);
         this.btn_ok.on(Laya.Event.CLICK,this, this.btnOkClick);
+        ErrorNote.getInstance.addListen(this);
     }
 
     /**

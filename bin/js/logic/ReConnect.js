@@ -35,6 +35,7 @@ var ReConnect = /** @class */ (function (_super) {
      * 打开监听 matchvs
      */
     ReConnect.prototype.onMvsListen = function () {
+        ErrorNote.getInstance.addListen(this);
         mvs.MsResponse.getInstance.on(mvs.MsEvent.EVENT_RECONNECT_RSP, this, this.reconnectResponse);
         mvs.MsResponse.getInstance.on(mvs.MsEvent.EVENT_SENDEVENT_RSP, this, this.sendEventResponse);
         mvs.MsResponse.getInstance.on(mvs.MsEvent.EVENT_SENDEVENT_NTFY, this, this.sendEventNotify);

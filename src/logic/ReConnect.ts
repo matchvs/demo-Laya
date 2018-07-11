@@ -20,6 +20,7 @@ class ReConnect extends ui.ReConnectUI{
     private initView(){
         this.btn_cancel.on(Laya.Event.CLICK, this, this.btnCancelEvent);
         this.btn_ok.on(Laya.Event.CLICK, this, this.btnOkEvent);
+        
         this.onMvsListen();
     }
 
@@ -27,6 +28,7 @@ class ReConnect extends ui.ReConnectUI{
      * 打开监听 matchvs
      */
     private onMvsListen(){
+        ErrorNote.getInstance.addListen(this);
         mvs.MsResponse.getInstance.on(mvs.MsEvent.EVENT_RECONNECT_RSP,this, this.reconnectResponse);
         mvs.MsResponse.getInstance.on(mvs.MsEvent.EVENT_SENDEVENT_RSP,this, this.sendEventResponse);
         mvs.MsResponse.getInstance.on(mvs.MsEvent.EVENT_SENDEVENT_NTFY,this, this.sendEventNotify);
