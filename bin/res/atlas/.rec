@@ -1,0 +1,28 @@
+D .
+D mvs
+R 2B8CE0BB bkg.png
+P 3E3B4FFE boll.png
+P C3EA7BD9 btn1.png
+P C2BA94BC btn7.png
+P 3183F194 btnbg.png
+P 555988A0 clear.png
+P 2554EB94 exit.png
+P B7F3F07B footer_text.png
+P 146B3B81 home.png
+P 45884D55 inputBox.png
+P B301DD87 itembg.png
+P 40060A5B loading.png
+P 97CBFE36 loadMatch.png
+R 1270BBD3 note.png
+P B0E50705 radio3.png
+P 218400F6 radio4.png
+P 6CB5E7E4 select.png
+D mvs/role
+P 2EA5E849 runleft_01.png
+P FE683907 runleft_02.png
+P 3F8499F5 runleft_03.png
+P ECD0E87D runleft_04.png
+P E57FC443 runright_01.png
+P 2EB94E8B runright_02.png
+P 2F670A89 runright_03.png
+P 47CEDBE2 runright_04.png
