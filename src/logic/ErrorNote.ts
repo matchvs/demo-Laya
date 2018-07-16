@@ -6,7 +6,7 @@ class ErrorNote extends ui.WarningUI{
     private static _instance:ErrorNote = null;
     private gatewayErr:boolean = false;
     private errMap:mvs.MsError ;
-    private currnPage:Laya.View;
+    private currnPage:any;
 
     /**
      * 监听错误回调函数

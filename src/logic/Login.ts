@@ -91,7 +91,7 @@ class Login extends ui.LoginUI{
     }
 
     /**
-     * 注册用户失败
+     * 注册用户
      * @param event 
      */
     private registUserResponse(event:mvs.MsEventData){
@@ -103,7 +103,7 @@ class Login extends ui.LoginUI{
             mvs.MsEngine.getInstance.login(GameData.myUser.userID,GameData.myUser.token, MsConfig.gameID, MsConfig.appKey, MsConfig.secretKey);
 
         }else{
-            console.info("注册用户：",data);
+            console.info("注册用户失败:",data);
         }
         return;
     }
