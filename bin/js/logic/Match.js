@@ -22,6 +22,7 @@ var Match = /** @class */ (function (_super) {
             _this.btn_kick2,
             _this.btn_kick3,
         ];
+        _this._roomID = "";
         _this.matchFlag = false; //是否匹配成功
         _this.playerList = []; //匹配到的用户列表
         _this.isOwner = false;
@@ -332,6 +333,7 @@ var Match = /** @class */ (function (_super) {
             this.addPlayerList(GameData.myUser.userID, GameData.myUser.name, GameData.myUser.avatar, tableID, this.isOwner);
             if (this.joinFlag == Match.JOINFLAG.WITHROOMID) {
                 this.match_title.text = data.roomInfo.roomID;
+                this._roomID = data.roomInfo.roomID;
             }
             else {
                 this.match_title.text = "匹配成功——等待其他人...";
@@ -375,6 +377,9 @@ var Match = /** @class */ (function (_super) {
         var data = e.data;
         console.info("玩家离开", data);
         var userID = data.userId;
+        /**
+         * 是否房主有变动，有变动的话就转移房主
+         */
         if (data.owner == GameData.myUser.userID) {
             this.isOwner = true;
         }
@@ -466,6 +471,7 @@ var Match = /** @class */ (function (_super) {
             //显示我自己的信息
             this.addPlayerList(GameData.myUser.userID, GameData.myUser.name, GameData.myUser.avatar, tableID, this.isOwner);
             this.match_title.text = data.roomID;
+            this._roomID = data.roomID;
             this.matchFlag = true;
         }
         else {
@@ -502,6 +508,7 @@ var Match = /** @class */ (function (_super) {
      */
     Match.prototype.kickPlayerResponse = function (e) {
         var data = e.data;
+        this.cancelStart(data.userID, this._roomID);
         this.wipePlayerLocation(data.userID, data.owner);
     };
     /**
@@ -535,6 +542,7 @@ var Match = /** @class */ (function (_super) {
             StageManage.getInstance.SwitchScreen(Lobby);
         }
         else {
+            this.cancelStart(data.userID, this._roomID);
             this.wipePlayerLocation(data.userID, data.owner);
         }
     };

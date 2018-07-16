@@ -19,6 +19,8 @@ class Match extends ui.MatchUI{
         this.btn_kick3,
     ];
 
+    private _roomID:string = "";
+
     private matchFlag:boolean = false; //是否匹配成功
     private playerList:Array<Player> = [];//匹配到的用户列表
     private isOwner:boolean = false;
@@ -371,6 +373,7 @@ class Match extends ui.MatchUI{
             this.addPlayerList(GameData.myUser.userID, GameData.myUser.name, GameData.myUser.avatar, tableID, this.isOwner);
             if(this.joinFlag == Match.JOINFLAG.WITHROOMID){
                 this.match_title.text = data.roomInfo.roomID;
+                this._roomID = data.roomInfo.roomID;
             }else{
                 this.match_title.text = "匹配成功——等待其他人...";
             }
@@ -417,6 +420,9 @@ class Match extends ui.MatchUI{
         console.info("玩家离开",data)
         let userID:number = data.userId;
 
+        /**
+         * 是否房主有变动，有变动的话就转移房主
+         */
         if(data.owner == GameData.myUser.userID){
             this.isOwner = true;
         }else{
@@ -511,6 +517,7 @@ class Match extends ui.MatchUI{
             //显示我自己的信息
             this.addPlayerList(GameData.myUser.userID, GameData.myUser.name, GameData.myUser.avatar, tableID, this.isOwner);
             this.match_title.text = data.roomID;
+            this._roomID = data.roomID;
             this.matchFlag = true;
 
         }else{
@@ -549,6 +556,7 @@ class Match extends ui.MatchUI{
      */
     private kickPlayerResponse(e:mvs.MsEventData){
         let data = e.data;
+        this.cancelStart(data.userID, this._roomID);
         this.wipePlayerLocation(data.userID, data.owner);
     }
 
@@ -582,6 +590,7 @@ class Match extends ui.MatchUI{
             this.removeMvsListener();
             StageManage.getInstance.SwitchScreen(Lobby);
         }else{
+            this.cancelStart(data.userID, this._roomID);
             this.wipePlayerLocation(data.userID, data.owner);
         }
     }
