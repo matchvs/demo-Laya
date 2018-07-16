@@ -15,11 +15,11 @@ demo 是使用  LayaAir TypeScript 实现。
 
 获取到 demo_laya 项目直接使用LayaAirIDE 打开即可运行。
 
-![./img/laya_demo1](..\img\laya_demo1.png)
+![./img/laya_demo1](http://imgs.matchvs.com/static/Laya/quickStartDoc/laya_demo1.png)
 
 打开 demo_laya 后，可以在 LayaAirIDE 左边可以看到工程目录结构如下：
 
-![./img/laya_demo1](..\img\laya_demo2.png)
+![./img/laya_demo1](http://imgs.matchvs.com/static/Laya/quickStartDoc/laya_demo2.png)
 
 ### SDK 配置
 
@@ -40,13 +40,13 @@ demo_laya
 
 配置好 matchvs sdk 后，需要到 bin/index.html 中使用 matchvs 库，不然会出现 matchvs 中的变量未定义问题。如下图：
 
-![./img/laya_demo1](..\img\laya_demo4.png)
+![./img/laya_demo1](http://imgs.matchvs.com/static/Laya/quickStartDoc/laya_demo4.png)
 
 ### 游戏配置
 
 src 目录是 demo源码目录，结构如下图：
 
-![./img/laya_demo1](..\img\laya_demo3.png)
+![./img/laya_demo1](http://imgs.matchvs.com/static/Laya/quickStartDoc/laya_demo3.png)
 
 - game :  是游戏对战房间参数配置目录，配置参数都在GameData 类型里，这里的参数一般是不要去修改。
 
@@ -106,11 +106,11 @@ class MsConfig{
 
 - 登录界面
 
-![](E:\Work\GitHub\img\laya_demo5.png)
+![](http://imgs.matchvs.com/static/Laya/quickStartDoc/laya_demo5.png)
 
 - 匹配界面
 
-![](E:\Work\GitHub\img\laya_demo6.png)
+![](http://imgs.matchvs.com/static/Laya/quickStartDoc/laya_demo6.png)
 
 
 
