@@ -1,6 +1,6 @@
 # Matchvs demo_laya
 
-demo 是使用  LayaAir TypeScript 实现。
+demo 是使用  LayaAir TypeScript 实现。演示了 matchvs sdk 在laya 中使用方法。集成 matchvs sdk 接口实现了注册、登录、创建房间、加入房间、踢人、同步游戏逻辑、断线重连等等主要功能。
 
 ## 环境搭建
 
@@ -23,7 +23,7 @@ demo 是使用  LayaAir TypeScript 实现。
 
 ### SDK 配置
 
-根据 Laya 官方文档，第三方库文件需要分别放在不同的目录下， `.d.ts` 文件反正工程  root目录的`libs` 目录下，`js` 文件放在 `bin/libs` 目录下， `.min.js` 文件放在 `bin/libs/min` 目录下。
+根据 Laya 官方文档，第三方库文件需要分别放在不同的目录下， `.d.ts` 文件放在工程  root目录的`libs` 目录下，`js` 文件放在 `bin/libs` 目录下， `.min.js` 文件放在 `bin/libs/min` 目录下。
 
 ```
 -- 第三方库文件放置结构
@@ -36,7 +36,7 @@ demo_laya
 		matchvs.d.ts
 ```
 
-> 注意：demo_laya 默认下带有 matchvs sdk 文件的，如果没有，请自行下载或者要获取最新的 matchvs_sdk 请到 [Matchvs官网](http://www.matchvs.com/serviceDownload) 下载。 
+> 注意：demo_laya 默认带有 matchvs sdk 文件的，如果没有，请自行下载或者要获取最新的 matchvs_sdk 请到 [Matchvs官网](http://www.matchvs.com/serviceDownload) 下载。 
 
 配置好 matchvs sdk 后，需要到 bin/index.html 中使用 matchvs 库，不然会出现 matchvs 中的变量未定义问题。如下图：
 
@@ -118,7 +118,7 @@ class MsConfig{
 
 这两个文件是 sdk 集成的重要文件 MsEngine 是SDK 请求函数封装，MsResponse 是SDK 回调函数封装。两个都是单例类型。接口调用 采用  MsEngine.getInstance.xxxx 的格式即可。MsResponse 是获取到回调后，会触发MsEvnet 自定义的事件，开发者可以根据自己需要修改定义的事件。MsResponse 事件监听格式采用 mvs.MsResponse.getInstance.on(mvs.MsEvent.XXXXX, this, this.Function); 
 
-- MsEngine.ts : 改文件集成了 matchvs sdk 的 MatchvsEngine  类接口。源码如下：
+- MsEngine.ts :该文件集成了 matchvs sdk 的 MatchvsEngine  类接口。源码如下：
 
 ```typescript
 module mvs {
@@ -196,6 +196,8 @@ module mvs {
 			this._response.joinRoomNotify = this.joinRoomNotify.bind(this);
             ......
 		}
+    }
+}
 
 ```
 
