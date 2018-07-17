@@ -93,7 +93,7 @@ var Login = /** @class */ (function (_super) {
         GameData.myUser.avatar = info.avatar;
     };
     /**
-     * 注册用户失败
+     * 注册用户
      * @param event
      */
     Login.prototype.registUserResponse = function (event) {
@@ -105,7 +105,7 @@ var Login = /** @class */ (function (_super) {
             mvs.MsEngine.getInstance.login(GameData.myUser.userID, GameData.myUser.token, MsConfig.gameID, MsConfig.appKey, MsConfig.secretKey);
         }
         else {
-            console.info("注册用户：", data);
+            console.info("注册用户失败:", data);
         }
         return;
     };
