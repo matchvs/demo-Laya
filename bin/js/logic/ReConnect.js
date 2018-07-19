@@ -39,7 +39,7 @@ var ReConnect = /** @class */ (function (_super) {
         mvs.MsResponse.getInstance.on(mvs.MsEvent.EVENT_RECONNECT_RSP, this, this.reconnectResponse);
         mvs.MsResponse.getInstance.on(mvs.MsEvent.EVENT_SENDEVENT_RSP, this, this.sendEventResponse);
         mvs.MsResponse.getInstance.on(mvs.MsEvent.EVENT_SENDEVENT_NTFY, this, this.sendEventNotify);
-        mvs.MsResponse.getInstance.on(mvs.MsEvent.EVENT_GETROOMDETAIL_RSP, this, this.getRoomDetailResponse);
+        // mvs.MsResponse.getInstance.on(mvs.MsEvent.EVENT_GETROOMDETAIL_RSP,this, this.getRoomDetailResponse);
     };
     /**
      * 关闭监听 matchvs
@@ -48,7 +48,7 @@ var ReConnect = /** @class */ (function (_super) {
         mvs.MsResponse.getInstance.off(mvs.MsEvent.EVENT_RECONNECT_RSP, this, this.reconnectResponse);
         mvs.MsResponse.getInstance.off(mvs.MsEvent.EVENT_SENDEVENT_RSP, this, this.sendEventResponse);
         mvs.MsResponse.getInstance.off(mvs.MsEvent.EVENT_SENDEVENT_NTFY, this, this.sendEventNotify);
-        mvs.MsResponse.getInstance.off(mvs.MsEvent.EVENT_GETROOMDETAIL_RSP, this, this.getRoomDetailResponse);
+        // mvs.MsResponse.getInstance.off(mvs.MsEvent.EVENT_GETROOMDETAIL_RSP,this, this.getRoomDetailResponse);
     };
     /**
      *
@@ -99,8 +99,13 @@ var ReConnect = /** @class */ (function (_super) {
         Laya.timer.clearAll(this);
         console.info("重连房间返回数据：", data);
         if (data.status == 200) {
-            console.info("重连进入房间成功!");
-            this.reconnectSuccess(data.roomInfo.roomID);
+            if (data.roomInfo.state == 2) {
+                console.info("重连进入房间成功!");
+                this.reconnectSuccess(data.roomInfo.roomID);
+            }
+            else {
+                this.txt_message.text = "游戏已经结束，请返回到大厅..." + data.status;
+            }
         }
         else {
             this.txt_message.text = "重连失败请返回到大厅..." + data.status;
@@ -130,9 +135,10 @@ var ReConnect = /** @class */ (function (_super) {
      * 重连成功
      */
     ReConnect.prototype.reconnectSuccess = function (roomID) {
-        this.txt_message.text = "正在查询房间状态...";
+        // this.txt_message.text = "正在查询房间状态...";
         //重连成功需要查看房间状态
-        mvs.MsEngine.getInstance.getRoomDetail(roomID);
+        // mvs.MsEngine.getInstance.getRoomDetail(roomID);
+        this.senOkMsgToOther();
     };
     /**
      *
@@ -175,6 +181,11 @@ var ReConnect = /** @class */ (function (_super) {
             }
         }
     };
+    /**
+     * 开始游戏
+     * @param type 游戏类型，标记是不是帧同步模式
+     * @param time 重连开始游戏时剩余时间值
+     */
     ReConnect.prototype.startGame = function (type, time) {
         this.release();
         if (this.playerList.length === GameData.maxPlayerNum) {
@@ -187,26 +198,18 @@ var ReConnect = /** @class */ (function (_super) {
         }
     };
     /**
-     * 查询房间信息
-     * @param e
+     * 发送链接成功消息，
      */
-    ReConnect.prototype.getRoomDetailResponse = function (e) {
-        var data = e.data;
-        if (data.status === 200 && data.state === 2) {
-            this.txt_message.text = "等待同步游戏信息...";
-            var event_1 = {
-                action: GameData.MSG_ACTION.RECONNECT_OK
-            };
-            //发送消息告诉其他玩家OK
-            var res = mvs.MsEngine.getInstance.sendEvent(JSON.stringify(event_1));
-            if (!res || res.result !== 0) {
-                return console.log('重连发送信息失败');
-            }
-        }
-        else {
-            this.release();
-            mvs.MsEngine.getInstance.leaveRoom("重连查询房间失败");
-            this.txt_message.text = "房间状态查询失败，以主动离开房间，请返回到大厅";
+    ReConnect.prototype.senOkMsgToOther = function () {
+        this.txt_message.text = "等待同步游戏信息...";
+        var event = {
+            action: GameData.MSG_ACTION.RECONNECT_OK
+        };
+        //发送消息告诉其他玩家OK
+        var res = mvs.MsEngine.getInstance.sendEvent(JSON.stringify(event));
+        if (!res || res.result !== 0) {
+            this.txt_message.text = "同步游戏信息...失败，请取消";
+            console.log('重连发送信息失败');
         }
     };
     return ReConnect;
