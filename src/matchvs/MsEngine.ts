@@ -5,7 +5,6 @@ module mvs {
 	export class MsEngine {
 		private static _instance = null;
 		private _engine:MatchvsEngine = null; //Matchvs 引擎
-		private _response:MatchvsResponse = null; 
 		public constructor() {
 			this._engine = new MatchvsEngine();
 		}
@@ -27,13 +26,25 @@ module mvs {
 		 * @param {number} gameID
 		 */
 		public init(channel:string, platform:string, gameID:number):number{
-			this._response = MsResponse.getInstance.getResponse();
 			let res = this._engine.init(MsResponse.getInstance.getResponse(),channel,platform,gameID);
 			if (res !== 200){
 				console.info("[MsEngine init failed] resCode:",res);
 				return res;
 			}
 			console.info("[MsEngine init seccess] resCode:",res);
+			return res;
+		}
+
+		/**
+		 * 独立部署的初始化
+		 */
+		public premiseInit(endPoint:string, gameID:number):number{
+			let res = this._engine.premiseInit( MsResponse.getInstance.getResponse(),endPoint, gameID);
+			if (res !== 0){
+				console.info("[MsEngine premiseInit failed] resCode:",res);
+				return res;
+			}
+			console.info("[MsEngine premiseInit seccess] resCode:",res);
 			return res;
 		}
 

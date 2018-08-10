@@ -10,14 +10,8 @@ var GameMain = /** @class */ (function () {
         Laya.stage.scaleMode = Laya.Stage.SCALE_SHOWALL;
         Laya.stage.alignH = "center";
         Laya.stage.alignV = "center";
-        //激活资源版本控制
-        // Laya.ResourceVersion.enable("version.json", Handler.create(null, this.beginLoad), Laya.ResourceVersion.FILENAME_VERSION);
         Laya.loader.load(["res/atlas/mvs.atlas", "res/atlas/mvs/role.atlas", GameData.battleBgimgUrl], Handler.create(this, this.onLoaded));
     }
-    // private beginLoad(){
-    //     //加载资源
-    //     Laya.loader.load(["res/atlas/mvs.atlas","res/atlas/mvs/role.atlas", GameData.battleBgimgUrl], Handler.create(this, this.onLoaded));
-    // }
     GameMain.prototype.onLoaded = function () {
         //实例UI界面
         var login = new Login();

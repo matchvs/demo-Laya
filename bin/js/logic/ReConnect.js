@@ -39,7 +39,6 @@ var ReConnect = /** @class */ (function (_super) {
         mvs.MsResponse.getInstance.on(mvs.MsEvent.EVENT_RECONNECT_RSP, this, this.reconnectResponse);
         mvs.MsResponse.getInstance.on(mvs.MsEvent.EVENT_SENDEVENT_RSP, this, this.sendEventResponse);
         mvs.MsResponse.getInstance.on(mvs.MsEvent.EVENT_SENDEVENT_NTFY, this, this.sendEventNotify);
-        // mvs.MsResponse.getInstance.on(mvs.MsEvent.EVENT_GETROOMDETAIL_RSP,this, this.getRoomDetailResponse);
     };
     /**
      * 关闭监听 matchvs
@@ -48,7 +47,6 @@ var ReConnect = /** @class */ (function (_super) {
         mvs.MsResponse.getInstance.off(mvs.MsEvent.EVENT_RECONNECT_RSP, this, this.reconnectResponse);
         mvs.MsResponse.getInstance.off(mvs.MsEvent.EVENT_SENDEVENT_RSP, this, this.sendEventResponse);
         mvs.MsResponse.getInstance.off(mvs.MsEvent.EVENT_SENDEVENT_NTFY, this, this.sendEventNotify);
-        // mvs.MsResponse.getInstance.off(mvs.MsEvent.EVENT_GETROOMDETAIL_RSP,this, this.getRoomDetailResponse);
     };
     /**
      *
@@ -135,9 +133,6 @@ var ReConnect = /** @class */ (function (_super) {
      * 重连成功
      */
     ReConnect.prototype.reconnectSuccess = function (roomID) {
-        // this.txt_message.text = "正在查询房间状态...";
-        //重连成功需要查看房间状态
-        // mvs.MsEngine.getInstance.getRoomDetail(roomID);
         this.senOkMsgToOther();
     };
     /**

@@ -26,6 +26,7 @@ var Login = /** @class */ (function (_super) {
         //按钮监听事件
         this.btn_ok.on(Laya.Event.CLICK, this, this.btnOkClick);
         this.btn_clear.on(Laya.Event.CLICK, this, this.btnClearClick);
+        this.btn_premise.on(Laya.Event.CLICK, this, this.btnPremiseClick);
         this.addMvsListener();
     };
     /**
@@ -127,6 +128,10 @@ var Login = /** @class */ (function (_super) {
         else {
             console.info("登录失败！");
         }
+    };
+    Login.prototype.btnPremiseClick = function (e) {
+        this.removeMvsListener();
+        StageManage.getInstance.SwitchScreen(Premise);
     };
     return Login;
 }(ui.LoginUI));

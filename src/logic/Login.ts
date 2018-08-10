@@ -17,6 +17,7 @@ class Login extends ui.LoginUI{
         //按钮监听事件
         this.btn_ok.on(Laya.Event.CLICK,this,this.btnOkClick);
         this.btn_clear.on(Laya.Event.CLICK,this,this.btnClearClick);
+        this.btn_premise.on(Laya.Event.CLICK,this,this.btnPremiseClick)
 
         this.addMvsListener();
     }
@@ -125,5 +126,10 @@ class Login extends ui.LoginUI{
         }else{
             console.info("登录失败！");
         }
+    }
+
+    private btnPremiseClick(e:Laya.Event){
+        this.removeMvsListener();
+        StageManage.getInstance.SwitchScreen(Premise)
     }
 }

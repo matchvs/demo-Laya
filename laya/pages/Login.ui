@@ -1,8 +1,8 @@
 {
     "x":0,
     "type":"View",
-    "selectedBox":27,
-    "selecteID":22,
+    "selectedBox":1,
+    "selecteID":29,
     "props":{"width":1136,"sceneColor":"#359be0","height":640,"alpha":1},
     "nodeParent":-1,
     "label":"View",
@@ -169,6 +169,19 @@
             "isAniNode":true,
             "hasChild":false,
             "compId":28,
+            "child":[
+                ]
+        },
+        {
+            "x":15,
+            "type":"Button",
+            "props":{"y":578,"x":1074,"var":"btn_premise","stateNum":"1","skin":"mvs/premise.png","name":"btn_premise"},
+            "nodeParent":1,
+            "label":"Button(btn_premise)",
+            "isDirectory":false,
+            "isAniNode":true,
+            "hasChild":false,
+            "compId":29,
             "child":[
                 ]
         }],

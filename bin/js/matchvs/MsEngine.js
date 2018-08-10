@@ -6,7 +6,6 @@ var mvs;
     var MsEngine = /** @class */ (function () {
         function MsEngine() {
             this._engine = null; //Matchvs 引擎
-            this._response = null;
             this._engine = new MatchvsEngine();
         }
         Object.defineProperty(MsEngine, "getInstance", {
@@ -29,13 +28,24 @@ var mvs;
          * @param {number} gameID
          */
         MsEngine.prototype.init = function (channel, platform, gameID) {
-            this._response = mvs.MsResponse.getInstance.getResponse();
             var res = this._engine.init(mvs.MsResponse.getInstance.getResponse(), channel, platform, gameID);
             if (res !== 200) {
                 console.info("[MsEngine init failed] resCode:", res);
                 return res;
             }
             console.info("[MsEngine init seccess] resCode:", res);
+            return res;
+        };
+        /**
+         * 独立部署的初始化
+         */
+        MsEngine.prototype.premiseInit = function (endPoint, gameID) {
+            var res = this._engine.premiseInit(mvs.MsResponse.getInstance.getResponse(), endPoint, gameID);
+            if (res !== 0) {
+                console.info("[MsEngine premiseInit failed] resCode:", res);
+                return res;
+            }
+            console.info("[MsEngine premiseInit seccess] resCode:", res);
             return res;
         };
         /**
