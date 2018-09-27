@@ -77,12 +77,11 @@ var Login = /** @class */ (function (_super) {
         MsConfig.gameID = Number(this.txtGameID.text);
         MsConfig.appKey = this.txtAppkey.text;
         MsConfig.secretKey = this.txtSecretKey.text;
-        if (this.radio_sel.selectedIndex == 1) {
-            MsConfig.platfrom = MsConfig.PLATFROM_TYPE.rel;
-        }
-        else {
-            MsConfig.platfrom = MsConfig.PLATFROM_TYPE.alp;
-        }
+        // if(this.radio_sel.selectedIndex == 1){
+        //     MsConfig.platfrom = MsConfig.PLATFROM_TYPE.rel;
+        // }else{
+        //     MsConfig.platfrom = MsConfig.PLATFROM_TYPE.alp;
+        // }
     };
     /**
      * 获取到用户信息后 设置一下用户信息

@@ -44,6 +44,10 @@ var Premise = /** @class */ (function (_super) {
         mvs.MsResponse.getInstance.off(mvs.MsEvent.EVENT_INIT_RSP, this, this.initResponse);
         mvs.MsResponse.getInstance.off(mvs.MsEvent.EVENT_LOGIN_RSP, this, this.loginResponse);
     };
+    /**
+     * 初始化回调
+     * @param event
+     */
     Premise.prototype.initResponse = function (event) {
         console.info("初始化回调：", event.data.status);
         if (event.data.status == 200) {
@@ -60,6 +64,10 @@ var Premise = /** @class */ (function (_super) {
             console.info("初始化失败！");
         }
     };
+    /**
+     * 登录回调
+     * @param event
+     */
     Premise.prototype.loginResponse = function (event) {
         var data = event.data;
         if (data.status == 200) {

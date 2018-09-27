@@ -2,7 +2,7 @@
     "x":0,
     "type":"View",
     "selectedBox":1,
-    "selecteID":27,
+    "selecteID":30,
     "props":{"width":1136,"sceneColor":"#000000","height":640,"alpha":1},
     "nodeParent":-1,
     "label":"View",
@@ -30,7 +30,7 @@
         {
             "x":15,
             "type":"Image",
-            "props":{"y":0,"x":0,"width":1136,"visible":true,"skin":"mvs/bkg.png","height":640,"alpha":1},
+            "props":{"y":0,"x":0,"width":1136,"visible":true,"skin":"mvs/bg.jpg","sizeGrid":"0,0,0,0,1","height":640,"alpha":1},
             "nodeParent":1,
             "label":"Image",
             "isDirectory":false,
@@ -177,7 +177,7 @@
         {
             "x":15,
             "type":"Label",
-            "props":{"y":50,"x":379,"width":400,"text":"游戏大厅","height":70,"fontSize":44,"font":"Microsoft YaHei","color":"#0b0b0b","bold":true,"align":"center"},
+            "props":{"y":50,"x":379,"width":400,"text":"游戏大厅","height":70,"fontSize":42,"font":"Microsoft YaHei","color":"#ffffff","bold":true,"align":"center"},
             "nodeParent":1,
             "label":"Label",
             "isDirectory":false,

@@ -2,8 +2,8 @@
     "x":0,
     "type":"View",
     "selectedBox":1,
-    "selecteID":13,
-    "props":{"y":0,"x":0,"width":1136,"sceneColor":"#000000","height":640},
+    "selecteID":4,
+    "props":{"y":0,"x":0,"width":1136,"sceneColor":"#ffffff","height":640},
     "nodeParent":-1,
     "label":"View",
     "isOpen":true,
@@ -30,7 +30,7 @@
         {
             "x":15,
             "type":"Image",
-            "props":{"y":0,"x":0,"width":1136,"skin":"mvs/bkg.png","height":640},
+            "props":{"y":0,"x":0,"width":1136,"skin":"mvs/bg.jpg","sizeGrid":"0,0,0,0,1","height":640},
             "nodeParent":1,
             "label":"Image",
             "isDirectory":false,
@@ -58,7 +58,7 @@
         {
             "x":15,
             "type":"Button",
-            "props":{"y":413,"width":134,"var":"btn_ok","stateNum":"1","skin":"mvs/btn1.png","labelSize":22,"labelBold":true,"label":"确定","height":54,"centerX":0},
+            "props":{"y":413,"width":145,"var":"btn_ok","stateNum":"1","skin":"mvs/btn1.png","labelSize":22,"labelBold":true,"label":"确定","height":44,"centerX":0},
             "nodeParent":1,
             "label":"Button(btn_ok)",
             "isDirectory":false,

@@ -2,7 +2,7 @@
     "x":0,
     "type":"View",
     "selectedBox":1,
-    "selecteID":19,
+    "selecteID":14,
     "props":{"width":1136,"sceneColor":"#000000","height":640},
     "nodeParent":-1,
     "label":"View",
@@ -30,7 +30,7 @@
         {
             "x":15,
             "type":"Image",
-            "props":{"y":0,"x":0,"width":1136,"skin":"mvs/bkg.png","height":640},
+            "props":{"y":0,"x":0,"width":1136,"skin":"mvs/bg.jpg","sizeGrid":"0,0,0,0,1","height":640},
             "nodeParent":1,
             "label":"Image",
             "isDirectory":false,
@@ -58,7 +58,7 @@
         {
             "x":15,
             "type":"Label",
-            "props":{"y":45,"width":400,"var":"txt_title","text":"房间列表","name":"txt_title","height":70,"fontSize":44,"font":"Microsoft YaHei","color":"#0a1c27","centerX":0,"bold":true,"align":"center"},
+            "props":{"y":45,"width":400,"var":"txt_title","text":"房间列表","name":"txt_title","height":70,"fontSize":42,"font":"Microsoft YaHei","color":"#ffffff","centerX":0,"bold":true,"align":"center"},
             "nodeParent":1,
             "label":"Label(txt_title)",
             "isDirectory":false,

@@ -87,7 +87,7 @@ var Battle = /** @class */ (function (_super) {
         //帧加载变化
         Laya.timer.frameLoop(1, this, this.loadFrame);
         //同步游戏内容
-        Laya.timer.loop(20, this, this.syncGameContent);
+        Laya.timer.loop(50, this, this.syncGameContent);
         //倒计时
         Laya.timer.loop(1000, this, this.countDownTime);
         //matchvs 事件监听

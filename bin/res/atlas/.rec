@@ -1,16 +1,25 @@
 D .
 D mvs
+R 4A1395CD bg.jpg
+R EE3F68DB bg_scroll.png
 R 2B8CE0BB bkg.png
 P 3E3B4FFE boll.png
-P C3EA7BD9 btn1.png
+P 508D99B2 btn1.png
+P C3EA7BD9 btn11.png
 P 3183F194 btnbg.png
 P 555988A0 clear.png
 P 2554EB94 exit.png
 P B7F3F07B footer_text.png
 P 146B3B81 home.png
+P D326C31A icon_arrow_left.png
+P F42CCCC3 icon_back.png
+P 9797FD2E icon_cancle.png
+P 360E8229 icon_ok.png
+P 9A03CF78 icon_owner.png
 P 45884D55 inputBox.png
 P B301DD87 itembg.png
 P 40060A5B loading.png
+P FD201F6B movepoint.png
 R 1270BBD3 note.png
 P D5455772 premise.png
 P B0E50705 radio3.png
