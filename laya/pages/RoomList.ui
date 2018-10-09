@@ -2,8 +2,8 @@
     "x":0,
     "type":"View",
     "selectedBox":1,
-    "selecteID":14,
-    "props":{"width":1136,"sceneColor":"#000000","height":640},
+    "selecteID":18,
+    "props":{"width":1280,"sceneColor":"#000000","height":760},
     "nodeParent":-1,
     "label":"View",
     "isOpen":true,
@@ -30,7 +30,7 @@
         {
             "x":15,
             "type":"Image",
-            "props":{"y":0,"x":0,"width":1136,"skin":"mvs/bg.jpg","sizeGrid":"0,0,0,0,1","height":640},
+            "props":{"y":0,"x":0,"width":1280,"skin":"mvs/bg.jpg","sizeGrid":"0,0,0,0,1","height":760},
             "nodeParent":1,
             "label":"Image",
             "isDirectory":false,
@@ -45,7 +45,7 @@
         {
             "x":15,
             "type":"Button",
-            "props":{"y":577,"x":1062,"var":"btn_exit","stateNum":"1","skin":"mvs/exit.png"},
+            "props":{"y":63,"x":61,"var":"btn_exit","stateNum":"1","skin":"mvs/icon_back.png"},
             "nodeParent":1,
             "label":"Button(btn_exit)",
             "isDirectory":false,
@@ -58,7 +58,7 @@
         {
             "x":15,
             "type":"Label",
-            "props":{"y":45,"width":400,"var":"txt_title","text":"房间列表","name":"txt_title","height":70,"fontSize":42,"font":"Microsoft YaHei","color":"#ffffff","centerX":0,"bold":true,"align":"center"},
+            "props":{"y":56,"x":120,"width":175,"var":"txt_title","text":"房间列表","name":"txt_title","height":49,"fontSize":36,"font":"Microsoft YaHei","color":"#ffffff","bold":false,"align":"left"},
             "nodeParent":1,
             "label":"Label(txt_title)",
             "isDirectory":false,
@@ -71,7 +71,7 @@
         {
             "x":15,
             "type":"List",
-            "props":{"width":459,"var":"list_roomItems","renderType":"render","name":"list_roomItems","height":341,"centerY":0,"centerX":0},
+            "props":{"width":799,"var":"list_roomItems","renderType":"render","name":"list_roomItems","height":461,"centerY":0,"centerX":0},
             "nodeParent":1,
             "label":"List(list_roomItems)",
             "isOpen":true,
@@ -83,19 +83,18 @@
                 {
                     "x":30,
                     "type":"Box",
-                    "props":{"renderType":"render"},
+                    "props":{"y":0,"x":0,"width":808,"renderType":"render","height":116},
                     "nodeParent":18,
                     "label":"Box",
-                    "isOpen":true,
+                    "isOpen":false,
                     "isDirectory":true,
                     "isAniNode":false,
                     "hasChild":true,
                     "compId":16,
                     "child":[
                         {
-                            "x":45,
                             "type":"Image",
-                            "props":{"x":1,"width":452,"skin":"mvs/note.png","pivotX":1,"height":113},
+                            "props":{"x":1,"width":800,"skin":"mvs/note.png","pivotX":1,"height":113},
                             "nodeParent":16,
                             "label":"Image",
                             "isDirectory":false,
@@ -106,9 +105,8 @@
                                 ]
                         },
                         {
-                            "x":45,
                             "type":"Button",
-                            "props":{"y":73,"x":382,"width":100,"var":"btn_entRoom","stateNum":"1","skin":"mvs/btn7.png","pivotY":23,"pivotX":52,"name":"btn_entRoom","labelStrokeColor":"#050505","labelSize":18,"labelPadding":"0","labelFont":"Microsoft YaHei","labelColors":"#000000","label":"进入","height":42},
+                            "props":{"y":43,"x":679,"width":160,"var":"btn_entRoom","stateNum":"1","skin":"mvs/btn1.png","pivotY":23,"pivotX":52,"name":"btn_entRoom","labelStrokeColor":"#050505","labelSize":18,"labelPadding":"0","labelFont":"Microsoft YaHei","labelColors":"#FFFFFF","label":"进入房间","height":70},
                             "nodeParent":16,
                             "label":"Button(btn_entRoom)",
                             "isDirectory":false,
@@ -119,9 +117,8 @@
                                 ]
                         },
                         {
-                            "x":45,
                             "type":"Label",
-                            "props":{"y":14,"x":75,"width":292,"var":"txt_roomID","text":"999999999999999999999","styleSkin":"comp/label.png","name":"txt_roomID","height":22,"fontSize":22,"color":"#060606","borderColor":"#f6f6f6","align":"center"},
+                            "props":{"y":14,"x":75,"width":344,"var":"txt_roomID","text":"999999999999999999999","styleSkin":"comp/label.png","name":"txt_roomID","height":28,"fontSize":24,"color":"#060606","borderColor":"#f6f6f6","align":"center"},
                             "nodeParent":16,
                             "label":"Label(txt_roomID)",
                             "isDirectory":false,
@@ -132,9 +129,8 @@
                                 ]
                         },
                         {
-                            "x":45,
                             "type":"Label",
-                            "props":{"y":42,"x":41,"wordWrap":true,"width":249,"var":"txt_otherInfo","valign":"middle","text":"label","name":"txt_otherInfo","height":57,"fontSize":14,"color":"#030303"},
+                            "props":{"y":42,"x":12,"wordWrap":true,"width":597,"var":"txt_otherInfo","valign":"middle","text":"label","name":"txt_otherInfo","height":57,"fontSize":24,"color":"#030303"},
                             "nodeParent":16,
                             "label":"Label(txt_otherInfo)",
                             "isDirectory":false,

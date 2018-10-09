@@ -27,6 +27,7 @@ var Premise = /** @class */ (function (_super) {
         this.txt_token.text = "OEWIURIOJNUOGIUDSF809LJOKETGT89H";
         this.addMvsListener();
         this.btn_ok.on(Laya.Event.CLICK, this, this.btnOkClick);
+        this.btn_back.on(Laya.Event.CLICK, this, this.btn_backClick);
     };
     /**
     * 打开 matchvs 事件监听
@@ -88,6 +89,9 @@ var Premise = /** @class */ (function (_super) {
     };
     Premise.prototype.btnOkClick = function (e) {
         mvs.MsEngine.getInstance.premiseInit(this.txt_endPoint.text, Number(this.txt_gameID.text));
+    };
+    Premise.prototype.btn_backClick = function (e) {
+        StageManage.getInstance.ToLogin();
     };
     return Premise;
 }(ui.PremiseUI));

@@ -20,6 +20,7 @@ var ReConnect = /** @class */ (function (_super) {
         _this.connNum = 0;
         _this.playerList = []; //匹配到的用户列表
         _this.actions = {};
+        _this.roomID = "";
         _this.initView();
         return _this;
     }
@@ -58,7 +59,7 @@ var ReConnect = /** @class */ (function (_super) {
     };
     ReConnect.prototype.btnOkEvent = function (e) {
         this.btn_ok.visible = false;
-        Laya.Tween.to(this.btn_cancel, { x: 568 }, 1000);
+        Laya.Tween.to(this.btn_cancel, { x: 578 }, 1000);
         this.img_loading.visible = true;
         this.txt_message.text = "准备重连";
         Laya.timer.frameLoop(1, this, this.animate);
@@ -133,6 +134,7 @@ var ReConnect = /** @class */ (function (_super) {
      * 重连成功
      */
     ReConnect.prototype.reconnectSuccess = function (roomID) {
+        this.roomID = roomID;
         this.senOkMsgToOther();
     };
     /**
@@ -185,7 +187,7 @@ var ReConnect = /** @class */ (function (_super) {
         this.release();
         if (this.playerList.length === GameData.maxPlayerNum) {
             //开始游戏
-            StageManage.getInstance.ToBattle(this.playerList, Boolean(type), time);
+            StageManage.getInstance.ToBattle(this.playerList, Boolean(type), { roomID: this.roomID }, time);
         }
         else {
             //跳到大厅

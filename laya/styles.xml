@@ -1,6 +1,6 @@
 <res>
    <item name="mvs/bkg.jpg" type="Image" compress="0" pack="0" quality="80" props="" picType="0" scale="0"/>
-   <item name="mvs/inputBox.png" type="TextInput" compress="0" pack="0" quality="80" props="" picType="0" scale="0"/>
+   <item name="mvs/inputBox.png" type="TextInput" compress="0" pack="1" quality="80" props="" picType="0" scale="0"/>
    <item name="mvs/btn1.png" type="Button" compress="0" pack="0" quality="80" props="" picType="0" scale="0"/>
    <item name="mvs/clear.png" type="Button" compress="0" pack="0" quality="80" props="" picType="0" scale="0"/>
    <item name="mvs/btn2.png" type="Button" compress="0" pack="0" quality="80" props="" picType="0" scale="0"/>
@@ -8,7 +8,7 @@
    <item name="mvs/btn4.png" type="Button" compress="0" pack="0" quality="80" props="" picType="0" scale="0"/>
    <item name="mvs/btn5.png" type="Button" compress="0" pack="0" quality="80" props="" picType="0" scale="0"/>
    <item name="mvs/exit.png" type="Button" compress="0" pack="0" quality="80" props="" picType="0" scale="0"/>
-   <item name="mvs/note.png" type="Image" compress="0" pack="0" quality="80" props="" picType="0" scale="0"/>
+   <item name="mvs/note.png" type="Image" compress="0" pack="1" quality="80" props="" picType="0" scale="0"/>
    <item name="mvs" type="" compress="0" pack="0" quality="80" props="" picType="0" scale="0"/>
    <item name="mvs/role" type="" compress="0" pack="0" quality="80" props="" picType="0" scale="0"/>
    <item name="mvs/boll.png" type="Image" compress="0" pack="0" quality="80" props="" picType="0" scale="0"/>
@@ -31,4 +31,5 @@
    <item name="mvs/role/runright_03.png" type="Image" compress="0" pack="0" quality="80" props="" picType="0" scale="0"/>
    <item name="mvs/role/runright_04.png" type="Image" compress="0" pack="0" quality="80" props="" picType="0" scale="0"/>
    <item name="mvs/bkg.png" type="Image" compress="0" pack="0" quality="80" props="" picType="0" scale="0"/>
+   <item name="mvs/bg.jpg" type="Image" compress="0" pack="1" quality="80" props="" picType="0" scale="0"/>
 </res>

@@ -8,6 +8,7 @@ class ReConnect extends ui.ReConnectUI{
     private connNum:number = 0;
     private playerList:Array<Player> = [];//匹配到的用户列表
     private actions:any = {};
+    private roomID:string = "";
 
     constructor(){
         super();
@@ -56,7 +57,7 @@ class ReConnect extends ui.ReConnectUI{
     private btnOkEvent(e:Laya.Event){
         this.btn_ok.visible = false;
         
-        Laya.Tween.to(this.btn_cancel,{x:568}, 1000);
+        Laya.Tween.to(this.btn_cancel,{x:578}, 1000);
         this.img_loading.visible = true;
         this.txt_message.text = "准备重连";
         Laya.timer.frameLoop(1, this, this.animate);
@@ -132,6 +133,7 @@ class ReConnect extends ui.ReConnectUI{
      * 重连成功
      */
     private reconnectSuccess(roomID){
+        this.roomID = roomID;
         this.senOkMsgToOther()
     }
      
@@ -189,7 +191,7 @@ class ReConnect extends ui.ReConnectUI{
         this.release();
         if(this.playerList.length === GameData.maxPlayerNum){
             //开始游戏
-            StageManage.getInstance.ToBattle(this.playerList, Boolean(type), time);
+            StageManage.getInstance.ToBattle(this.playerList, Boolean(type), {roomID:this.roomID}, time);
         }else{
             //跳到大厅
              StageManage.getInstance.SwitchScreen(Lobby);

@@ -40,13 +40,15 @@ class StageManage{
         Laya.stage.addChild(s);
     }
 
-    public ToBattle(players:Array<Player>, isFrameSync:boolean, time ?:number){
+    public ToBattle(players:Array<Player>, isFrameSync:boolean, obj, time ?:number){
         let bt:Battle = new Battle();
+        bt.setOtherInfo(obj);
         if(time){
             bt.setGameTime(time);
         }
         if(bt.setPlayes(players) == 0){
             if(isFrameSync){
+                //打开帧同步功能
                 bt.openFrameSync(10);
             }
             Laya.stage.removeChildren();
@@ -58,9 +60,9 @@ class StageManage{
      * 
      * @param players 
      */
-    public ToResult(players:Array<Player>, flag:number){
+    public ToResult(players:Array<Player>, obj:any, flag:number){
         Laya.stage.removeChildren();
-        let res:Result = new Result(players,flag);
+        let res:Result = new Result(players, obj, flag);
         Laya.stage.addChild(res);
     }
 }

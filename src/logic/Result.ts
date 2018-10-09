@@ -3,10 +3,13 @@
 */
 class Result extends ui.ResultUI{
     private playerList:Array<Player> = [];
+    private roomID:string="";
 
-    constructor(userList:Array<Player>, flag?:number){
+    constructor(userList:Array<Player>, obj:any, flag?:number){
         super();
+        if("roomID" in obj){this.roomID = obj.roomID;}
         this.initView(userList);
+        
     }
 
     private initView(userList:Array<Player>){
@@ -30,6 +33,7 @@ class Result extends ui.ResultUI{
         });
         this.scoreSort();
     }
+
     private scoreSort(){
         this.playerList.sort( function (a, b){
             return a.score > b.score ? -1 : 1;
@@ -37,6 +41,7 @@ class Result extends ui.ResultUI{
     }
 
     private showInfo(){
+        this.txt_roomID.text = "房间号："+this.roomID;
         for(let i = 0; i < this.playerList.length; i++){
             let name = this.playerList[i].name == "" ? this.playerList[i].userID: this.playerList[i].name;
             this["name_player"+i].text = name+" 分数["+this.playerList[i].score+"]";

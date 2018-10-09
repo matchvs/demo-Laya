@@ -13,9 +13,13 @@ var __extends = (this && this.__extends) || (function () {
 */
 var Result = /** @class */ (function (_super) {
     __extends(Result, _super);
-    function Result(userList, flag) {
+    function Result(userList, obj, flag) {
         var _this = _super.call(this) || this;
         _this.playerList = [];
+        _this.roomID = "";
+        if ("roomID" in obj) {
+            _this.roomID = obj.roomID;
+        }
         _this.initView(userList);
         return _this;
     }
@@ -44,6 +48,7 @@ var Result = /** @class */ (function (_super) {
         });
     };
     Result.prototype.showInfo = function () {
+        this.txt_roomID.text = "房间号：" + this.roomID;
         for (var i = 0; i < this.playerList.length; i++) {
             var name_1 = this.playerList[i].name == "" ? this.playerList[i].userID : this.playerList[i].name;
             this["name_player" + i].text = name_1 + " 分数[" + this.playerList[i].score + "]";

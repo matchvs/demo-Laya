@@ -3,7 +3,7 @@
 */
 class GameData{
     public static myUser:GUser = new GUser();
-    public static battleBgimgUrl:string = "http://193.112.47.13/icon/laya/battle.png";
+    public static battleBgimgUrl:string = "http://www.villeboss.com/icon/laya/battle.png";
     public static maxPlayerNum:number = 3;//
     public static mode:number = 0;//房间模式，由cp自己定义
     public static canWatch:number = 0;//

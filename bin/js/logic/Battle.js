@@ -34,6 +34,7 @@ var Battle = /** @class */ (function (_super) {
         _this._roleMoveGap = 10; //人物移动移动的距离
         _this.gameTimer = 120; //游戏倒计时时间
         _this.ballYLocY = 510;
+        _this.roomID = "";
         // private gameEvents:any = {};
         // 是否帧同步模式
         _this.isFrameSysc = false;
@@ -159,6 +160,11 @@ var Battle = /** @class */ (function (_super) {
         //显示用户信息，进游戏对战界面前必须调用 setPlayes
         this.showPlayersInfo();
         return 0;
+    };
+    Battle.prototype.setOtherInfo = function (obj) {
+        if ("roomID" in obj) {
+            this.roomID = obj.roomID;
+        }
     };
     /**
      * 设置游戏时间
@@ -512,7 +518,7 @@ var Battle = /** @class */ (function (_super) {
         this.release();
         mvs.MsEngine.getInstance.leaveRoom("游戏结束");
         console.info("游戏结束！");
-        StageManage.getInstance.ToResult(this._playerList, flag);
+        StageManage.getInstance.ToResult(this._playerList, { roomID: this.roomID }, flag);
     };
     /**
      * 发送消息回调

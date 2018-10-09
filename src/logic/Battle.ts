@@ -31,6 +31,8 @@ class Battle extends ui.BattleUI{
 
     private ballYLocY:number = 510;
 
+    private roomID:string = "";
+
     // private gameEvents:any = {};
 
     // 是否帧同步模式
@@ -195,6 +197,12 @@ class Battle extends ui.BattleUI{
         //显示用户信息，进游戏对战界面前必须调用 setPlayes
         this.showPlayersInfo();
         return 0;
+    }
+
+    public setOtherInfo(obj:any){
+        if("roomID" in obj){
+            this.roomID = obj.roomID;
+        }
     }
 
     /**
@@ -583,7 +591,7 @@ class Battle extends ui.BattleUI{
         this.release();
         mvs.MsEngine.getInstance.leaveRoom("游戏结束");
         console.info("游戏结束！");
-        StageManage.getInstance.ToResult(this._playerList, flag);
+        StageManage.getInstance.ToResult(this._playerList,{roomID:this.roomID}, flag);
     }
 
     /**

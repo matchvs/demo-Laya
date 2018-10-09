@@ -2,8 +2,8 @@
     "x":0,
     "type":"View",
     "selectedBox":1,
-    "selecteID":42,
-    "props":{"width":1136,"visible":true,"sceneColor":"#000000","height":640,"alpha":1},
+    "selecteID":57,
+    "props":{"width":1280,"visible":true,"sceneColor":"#000000","height":720,"alpha":1},
     "nodeParent":-1,
     "label":"View",
     "isOpen":true,
@@ -14,23 +14,8 @@
     "child":[
         {
             "x":15,
-            "type":"Rect",
-            "props":{"y":0,"x":0,"width":1136,"lineWidth":1,"height":640,"fillColor":"#86c074"},
-            "nodeParent":1,
-            "label":"Rect",
-            "isDirectory":false,
-            "isAniNode":true,
-            "hasChild":false,
-            "compId":59,
-            "child":[
-                ],
-            "$LOCKED":true,
-            "$HIDDEN":false
-        },
-        {
-            "x":15,
             "type":"Image",
-            "props":{"y":0,"x":0,"width":1136,"skin":"mvs/bg.jpg","sizeGrid":"0,0,0,0,1","height":640},
+            "props":{"y":0,"x":0,"width":1280,"skin":"mvs/bg.jpg","sizeGrid":"0,0,0,0,1","height":720},
             "nodeParent":1,
             "label":"Image",
             "isDirectory":false,
@@ -45,7 +30,7 @@
         {
             "x":15,
             "type":"Label",
-            "props":{"y":71,"width":503,"var":"match_title","text":"随机匹配中...","stroke":1,"height":37,"fontSize":28,"font":"Microsoft YaHei","color":"#ffffff","centerX":-1,"bold":false,"align":"center"},
+            "props":{"y":125,"x":120,"width":397,"var":"match_title","text":"00000","stroke":1,"height":35,"fontSize":24,"font":"Microsoft YaHei","color":"#ffffff","bold":false,"align":"left"},
             "nodeParent":1,
             "label":"Label(match_title)",
             "isDirectory":false,
@@ -54,12 +39,12 @@
             "compId":41,
             "child":[
                 ],
-            "$LOCKED":true
+            "$LOCKED":false
         },
         {
             "x":15,
             "type":"Button",
-            "props":{"y":525,"width":181,"var":"btn_cancel","stateNum":"1","skin":"mvs/btn1.png","name":"btn_cancel","labelSize":28,"labelFont":"SimHei","labelBold":true,"label":"取消","height":46,"centerX":0},
+            "props":{"y":63,"x":61,"width":36,"var":"btn_cancel","stateNum":"1","skin":"mvs/icon_back.png","name":"btn_cancel","labelSize":28,"labelFont":"SimHei","labelBold":true,"height":36},
             "nodeParent":1,
             "label":"Button(btn_cancel)",
             "isDirectory":false,
@@ -72,17 +57,16 @@
         {
             "x":15,
             "type":"Sprite",
-            "props":{"y":476,"x":566,"width":40,"pivotY":20,"pivotX":20,"height":40},
+            "props":{"y":591,"x":627,"width":40,"pivotY":20,"pivotX":20,"height":40},
             "nodeParent":1,
             "label":"Sprite",
-            "isOpen":true,
+            "isOpen":false,
             "isDirectory":true,
             "isAniNode":true,
             "hasChild":true,
             "compId":44,
             "child":[
                 {
-                    "x":30,
                     "type":"Image",
                     "props":{"y":20,"x":20,"width":40,"var":"loadMatch","skin":"mvs/loading.png","pivotY":20,"pivotX":20,"height":40},
                     "nodeParent":44,
@@ -98,7 +82,7 @@
         {
             "x":15,
             "type":"Image",
-            "props":{"y":171,"x":262,"visible":false,"var":"img_OwnerFlag1","skin":"mvs/home.png","name":"img_OwnerFlag1"},
+            "props":{"y":246,"x":277,"visible":false,"var":"img_OwnerFlag1","skin":"mvs/home.png","name":"img_OwnerFlag1"},
             "nodeParent":1,
             "label":"Image(img_OwnerFlag1)",
             "isDirectory":false,
@@ -111,9 +95,10 @@
         {
             "x":15,
             "type":"Image",
-            "props":{"y":171,"x":262,"visible":false,"var":"img_OwnerFlag2","skin":"mvs/home.png","name":"img_OwnerFlag2"},
+            "props":{"y":246,"x":277,"visible":false,"var":"img_OwnerFlag2","skin":"mvs/home.png","name":"img_OwnerFlag2"},
             "nodeParent":1,
             "label":"Image(img_OwnerFlag2)",
+            "isOpen":false,
             "isDirectory":false,
             "isAniNode":true,
             "hasChild":false,
@@ -124,7 +109,7 @@
         {
             "x":15,
             "type":"Image",
-            "props":{"y":171,"x":262,"visible":false,"var":"img_OwnerFlag3","skin":"mvs/home.png","name":"img_OwnerFlag3"},
+            "props":{"y":246,"x":277,"visible":false,"var":"img_OwnerFlag3","skin":"mvs/home.png","name":"img_OwnerFlag3"},
             "nodeParent":1,
             "label":"Image(img_OwnerFlag3)",
             "isDirectory":false,
@@ -137,7 +122,7 @@
         {
             "x":15,
             "type":"CheckBox",
-            "props":{"y":198,"x":843,"width":117,"visible":false,"var":"chk_FrameSysc","skin":"mvs/select.png","name":"chk_FrameSysc","labelSize":28,"labelFont":"Arial","labelColors":"#ffffff","labelBold":true,"label":"打开帧同步","height":35},
+            "props":{"y":252,"x":949,"width":182,"visible":false,"var":"chk_FrameSysc","skin":"mvs/radio4.png","name":"chk_FrameSysc","labelSize":28,"labelFont":"Arial","labelColors":"#ffffff","labelBold":true,"label":"打开帧同步","height":35},
             "nodeParent":1,
             "label":"CheckBox(chk_FrameSysc)",
             "isDirectory":false,
@@ -150,7 +135,7 @@
         {
             "x":15,
             "type":"Panel",
-            "props":{"y":152,"x":329,"width":504,"height":273},
+            "props":{"y":223,"x":388,"width":540,"height":321},
             "nodeParent":1,
             "label":"Panel",
             "isOpen":true,
@@ -162,7 +147,7 @@
                 {
                     "x":30,
                     "type":"Image",
-                    "props":{"y":12,"width":500,"visible":true,"skin":"mvs/itembg.png","height":80},
+                    "props":{"y":-1,"x":0,"width":540,"visible":true,"skin":"mvs/inputBox.png","height":90},
                     "nodeParent":64,
                     "label":"Image",
                     "isOpen":false,
@@ -177,18 +162,19 @@
                 {
                     "x":30,
                     "type":"Image",
-                    "props":{"x":1,"width":100,"var":"img_Player1","skin":"http://193.112.47.13/headimg/1.jpg","sizeGrid":"0,0,0,0","pivotX":-1,"name":"img_Player1","height":100},
+                    "props":{"y":0,"x":1,"width":98,"var":"img_Player1","skin":"http://193.112.47.13/headimg/1.jpg","sizeGrid":"0,0,0,0","pivotX":-1,"name":"img_Player1","height":89},
                     "nodeParent":64,
                     "label":"Image(img_Player1)",
-                    "isOpen":false,
+                    "isOpen":true,
                     "isDirectory":true,
                     "isAniNode":true,
                     "hasChild":true,
                     "compId":23,
                     "child":[
                         {
+                            "x":45,
                             "type":"Sprite",
-                            "props":{"y":57,"x":56,"width":92,"renderType":"mask","pivotY":40,"pivotX":52,"height":84},
+                            "props":{"y":0,"x":0,"width":92,"renderType":"mask","height":87},
                             "nodeParent":23,
                             "label":"Sprite",
                             "isOpen":true,
@@ -198,8 +184,9 @@
                             "compId":25,
                             "child":[
                                 {
+                                    "x":60,
                                     "type":"Circle",
-                                    "props":{"y":35,"x":43,"radius":40,"lineWidth":1,"fillColor":"#ff0000"},
+                                    "props":{"y":46,"x":46,"radius":40,"lineWidth":1,"fillColor":"#ff0000"},
                                     "nodeParent":25,
                                     "label":"Circle",
                                     "isDirectory":false,
@@ -215,7 +202,7 @@
                 {
                     "x":30,
                     "type":"Image",
-                    "props":{"y":100,"width":500,"visible":true,"skin":"mvs/itembg.png","height":80},
+                    "props":{"y":110,"x":0,"width":540,"visible":true,"skin":"mvs/inputBox.png","height":90},
                     "nodeParent":64,
                     "label":"Image",
                     "isOpen":true,
@@ -230,7 +217,7 @@
                 {
                     "x":30,
                     "type":"Image",
-                    "props":{"y":88,"x":4,"width":100,"var":"img_Player2","skin":"http://193.112.47.13/headimg/1.jpg","sizeGrid":"0,0,0,0","pivotX":-1,"name":"img_Player2","height":100},
+                    "props":{"y":107,"x":4,"width":94,"var":"img_Player2","skin":"http://193.112.47.13/headimg/1.jpg","sizeGrid":"0,0,0,0","pivotX":-1,"name":"img_Player2","height":92},
                     "nodeParent":64,
                     "label":"Image(img_Player2)",
                     "isOpen":false,
@@ -241,7 +228,7 @@
                     "child":[
                         {
                             "type":"Sprite",
-                            "props":{"y":49,"x":58,"width":92,"renderType":"mask","pivotY":40,"pivotX":52,"height":84},
+                            "props":{"y":0,"x":0,"width":91,"renderType":"mask","height":88},
                             "nodeParent":27,
                             "label":"Sprite",
                             "isOpen":true,
@@ -252,7 +239,7 @@
                             "child":[
                                 {
                                     "type":"Circle",
-                                    "props":{"y":43,"x":42,"radius":40,"lineWidth":1,"fillColor":"#ff0000"},
+                                    "props":{"y":46,"x":46,"radius":40,"lineWidth":1,"fillColor":"#ff0000"},
                                     "nodeParent":29,
                                     "label":"Circle",
                                     "isDirectory":false,
@@ -268,7 +255,7 @@
                 {
                     "x":30,
                     "type":"Image",
-                    "props":{"y":188,"width":500,"visible":true,"skin":"mvs/itembg.png","height":80},
+                    "props":{"y":221,"x":0,"width":540,"visible":true,"skin":"mvs/inputBox.png","height":90},
                     "nodeParent":64,
                     "label":"Image",
                     "isOpen":false,
@@ -283,7 +270,7 @@
                 {
                     "x":30,
                     "type":"Image",
-                    "props":{"y":175,"x":5,"width":104,"var":"img_Player3","skin":"http://193.112.47.13/headimg/1.jpg","sizeGrid":"0,0,0,0","pivotX":-1,"name":"img_Player3","height":97},
+                    "props":{"y":222,"x":5,"width":95,"var":"img_Player3","skin":"http://193.112.47.13/headimg/1.jpg","sizeGrid":"0,0,0,0","pivotX":-1,"name":"img_Player3","height":91},
                     "nodeParent":64,
                     "label":"Image(img_Player3)",
                     "isOpen":false,
@@ -294,7 +281,7 @@
                     "child":[
                         {
                             "type":"Sprite",
-                            "props":{"y":57,"x":53,"width":92,"renderType":"mask","pivotY":40,"pivotX":52,"height":84},
+                            "props":{"y":0,"x":0,"width":92,"renderType":"mask","pivotY":0,"pivotX":0,"height":84},
                             "nodeParent":31,
                             "label":"Sprite",
                             "isOpen":true,
@@ -305,7 +292,7 @@
                             "child":[
                                 {
                                     "type":"Circle",
-                                    "props":{"y":36,"x":46,"radius":40,"lineWidth":1,"fillColor":"#ff0000"},
+                                    "props":{"y":46,"x":46,"radius":40,"lineWidth":1,"fillColor":"#ff0000"},
                                     "nodeParent":33,
                                     "label":"Circle",
                                     "isDirectory":false,
@@ -321,7 +308,7 @@
                 {
                     "x":30,
                     "type":"Label",
-                    "props":{"y":40,"x":111,"width":259,"var":"name_Player1","text":"用户1","height":27,"fontSize":18,"color":"#060606","align":"center"},
+                    "props":{"y":32,"x":98,"width":310,"var":"name_Player1","text":"用户1","height":27,"fontSize":18,"color":"#060606","align":"center"},
                     "nodeParent":64,
                     "label":"Label(name_Player1)",
                     "isDirectory":false,
@@ -334,7 +321,7 @@
                 {
                     "x":30,
                     "type":"Label",
-                    "props":{"y":129,"x":111,"width":258,"var":"name_Player2","text":"用户2","height":25,"fontSize":18,"color":"#010101","align":"center"},
+                    "props":{"y":144,"x":98,"width":307,"var":"name_Player2","text":"用户2","height":27,"fontSize":18,"color":"#010101","align":"center"},
                     "nodeParent":64,
                     "label":"Label(name_Player2)",
                     "isDirectory":false,
@@ -347,7 +334,7 @@
                 {
                     "x":30,
                     "type":"Label",
-                    "props":{"y":214,"x":111,"width":256,"var":"name_Player3","text":"用户3","height":26,"fontSize":18,"color":"#0b0b0b","align":"center"},
+                    "props":{"y":256,"x":98,"width":307,"var":"name_Player3","text":"用户3","height":26,"fontSize":18,"color":"#0b0b0b","align":"center"},
                     "nodeParent":64,
                     "label":"Label(name_Player3)",
                     "isDirectory":false,
@@ -360,7 +347,7 @@
                 {
                     "x":30,
                     "type":"Button",
-                    "props":{"y":55,"x":436,"width":100,"visible":false,"var":"btn_kick1","stateNum":"1","skin":"mvs/btn7.png","pivotY":20,"pivotX":50,"name":"btn_kick1","labelSize":22,"labelColors":"#090a09","labelBold":true,"label":"踢掉","height":40},
+                    "props":{"y":43,"x":469,"width":100,"visible":false,"var":"btn_kick1","stateNum":"1","skin":"mvs/btn1.png","pivotY":20,"pivotX":50,"name":"btn_kick1","labelSize":22,"labelColors":"#090a09","labelBold":true,"label":"踢掉","height":50},
                     "nodeParent":64,
                     "label":"Button(btn_kick1)",
                     "isDirectory":false,
@@ -373,7 +360,7 @@
                 {
                     "x":30,
                     "type":"Button",
-                    "props":{"y":143,"x":438,"width":100,"visible":false,"var":"btn_kick2","stateNum":"1","skin":"mvs/btn7.png","pivotY":20,"pivotX":50,"name":"btn_kick2","labelSize":22,"labelColors":"#090a09","labelBold":true,"label":"踢掉","height":40},
+                    "props":{"y":149,"x":469,"width":100,"visible":false,"var":"btn_kick2","stateNum":"1","skin":"mvs/btn1.png","pivotY":20,"pivotX":50,"name":"btn_kick2","labelSize":22,"labelColors":"#090a09","labelBold":true,"label":"踢掉","height":50},
                     "nodeParent":64,
                     "label":"Button(btn_kick2)",
                     "isDirectory":false,
@@ -386,7 +373,7 @@
                 {
                     "x":30,
                     "type":"Button",
-                    "props":{"y":228,"x":440,"width":100,"visible":false,"var":"btn_kick3","stateNum":"1","skin":"mvs/btn7.png","pivotY":20,"pivotX":50,"name":"btn_kick3","labelSize":22,"labelColors":"#090a09","labelBold":true,"label":"踢掉","height":40},
+                    "props":{"y":261,"x":469,"width":100,"visible":false,"var":"btn_kick3","stateNum":"1","skin":"mvs/btn1.png","pivotY":20,"pivotX":50,"name":"btn_kick3","labelSize":22,"labelColors":"#090a09","labelBold":true,"label":"踢掉","height":50},
                     "nodeParent":64,
                     "label":"Button(btn_kick3)",
                     "isDirectory":false,
@@ -396,6 +383,33 @@
                     "child":[
                         ]
                 }]
+        },
+        {
+            "x":15,
+            "type":"Label",
+            "props":{"y":666,"x":484,"width":312,"valign":"middle","text":"提示：需要满3个玩家才能开始游戏","height":28,"fontSize":20,"color":"#999999","align":"left"},
+            "nodeParent":1,
+            "label":"Label",
+            "isDirectory":false,
+            "isAniNode":true,
+            "hasChild":false,
+            "compId":67,
+            "child":[
+                ]
+        },
+        {
+            "x":15,
+            "type":"Label",
+            "props":{"y":56,"x":120,"width":235,"text":"等待玩家加入","stroke":1,"height":50,"fontSize":36,"font":"Microsoft YaHei","color":"#ffffff","bold":false,"align":"left"},
+            "nodeParent":1,
+            "label":"Label",
+            "isDirectory":false,
+            "isAniNode":true,
+            "hasChild":false,
+            "compId":68,
+            "child":[
+                ],
+            "$LOCKED":true
         }],
     "animations":[
         {

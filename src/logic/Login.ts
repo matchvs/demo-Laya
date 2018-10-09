@@ -51,6 +51,8 @@ class Login extends ui.LoginUI{
     private btnClearClick(){
         console.info("清理缓存的用户信息");
         LocalStore_Clear();
+        Laya.Tween.to(this.clearNote,{alpha:1},500);
+        setTimeout(()=>{Laya.Tween.to(this.clearNote,{alpha:0},500);},500);
     }
 
     /**

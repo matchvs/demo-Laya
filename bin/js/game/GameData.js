@@ -5,7 +5,7 @@ var GameData = /** @class */ (function () {
     function GameData() {
     }
     GameData.myUser = new GUser();
-    GameData.battleBgimgUrl = "http://193.112.47.13/icon/laya/battle.png";
+    GameData.battleBgimgUrl = "http://www.villeboss.com/icon/laya/battle.png";
     GameData.maxPlayerNum = 3; //
     GameData.mode = 0; //房间模式，由cp自己定义
     GameData.canWatch = 0; //

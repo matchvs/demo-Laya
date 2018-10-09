@@ -2,8 +2,8 @@
     "x":0,
     "type":"View",
     "selectedBox":1,
-    "selecteID":9,
-    "props":{"y":0,"x":0,"width":1136,"visible":true,"sceneColor":"#000000","height":640},
+    "selecteID":13,
+    "props":{"y":0,"x":0,"width":1280,"visible":true,"sceneColor":"#000000","height":720},
     "nodeParent":-1,
     "label":"View",
     "isOpen":true,
@@ -30,7 +30,7 @@
         {
             "x":15,
             "type":"Image",
-            "props":{"y":0,"x":0,"width":1136,"skin":"mvs/bg.jpg","sizeGrid":"0,0,0,0,1","height":640},
+            "props":{"y":0,"x":0,"width":1280,"skin":"mvs/bg.jpg","sizeGrid":"0,0,0,0,1","height":720},
             "nodeParent":1,
             "label":"Image",
             "isDirectory":false,
@@ -45,7 +45,7 @@
         {
             "x":15,
             "type":"Button",
-            "props":{"y":462,"x":708,"width":119,"var":"btn_cancel","stateNum":"1","skin":"mvs/btn7.png","pivotX":61,"name":"btn_cancel","labelSize":20,"labelFont":"Microsoft YaHei","labelColors":"#000000","labelBold":true,"label":"取消","height":39},
+            "props":{"y":462,"x":720,"width":140,"var":"btn_cancel","stateNum":"1","skin":"mvs/exit.png","pivotY":0,"pivotX":0,"name":"btn_cancel","labelSize":20,"labelFont":"Microsoft YaHei","labelColors":"#000000","labelBold":true,"label":"取消","height":50},
             "nodeParent":1,
             "label":"Button(btn_cancel)",
             "isDirectory":false,
@@ -58,7 +58,7 @@
         {
             "x":15,
             "type":"Label",
-            "props":{"width":492,"var":"txt_message","text":"检测到您上一局游戏还没结束，是否重连？","name":"txt_message","height":29,"fontSize":22,"color":"#8e8080","centerY":-100,"centerX":0,"bold":true,"align":"center"},
+            "props":{"y":246,"x":394,"width":492,"var":"txt_message","text":"检测到您上一局游戏还没结束，是否重连？","name":"txt_message","height":29,"fontSize":22,"color":"#8e8080","centerY":-100,"centerX":0,"bold":true,"align":"center"},
             "nodeParent":1,
             "label":"Label(txt_message)",
             "isDirectory":false,
@@ -71,7 +71,7 @@
         {
             "x":15,
             "type":"Button",
-            "props":{"y":462,"x":370,"width":119,"var":"btn_ok","stateNum":"1","skin":"mvs/btn7.png","name":"btn_ok","labelSize":20,"labelFont":"Microsoft YaHei","labelColors":"#000000","labelBold":true,"label":"确定","height":39},
+            "props":{"y":462,"x":436,"width":140,"var":"btn_ok","stateNum":"1","skin":"mvs/btn1.png","name":"btn_ok","labelSize":20,"labelFont":"Microsoft YaHei","labelColors":"#000000","labelBold":true,"label":"确定","height":50},
             "nodeParent":1,
             "label":"Button(btn_ok)",
             "isDirectory":false,
@@ -84,7 +84,7 @@
         {
             "x":15,
             "type":"Sprite",
-            "props":{"y":333,"x":568,"width":40,"visible":false,"var":"img_loading","pivotY":20,"pivotX":20,"name":"img_loading","height":40},
+            "props":{"y":360,"x":640,"width":40,"visible":false,"var":"img_loading","pivotY":20,"pivotX":20,"name":"img_loading","height":40},
             "nodeParent":1,
             "label":"Sprite(img_loading)",
             "isOpen":false,

@@ -35,13 +35,15 @@ var StageManage = /** @class */ (function () {
         var s = new screen();
         Laya.stage.addChild(s);
     };
-    StageManage.prototype.ToBattle = function (players, isFrameSync, time) {
+    StageManage.prototype.ToBattle = function (players, isFrameSync, obj, time) {
         var bt = new Battle();
+        bt.setOtherInfo(obj);
         if (time) {
             bt.setGameTime(time);
         }
         if (bt.setPlayes(players) == 0) {
             if (isFrameSync) {
+                //打开帧同步功能
                 bt.openFrameSync(10);
             }
             Laya.stage.removeChildren();
@@ -52,9 +54,9 @@ var StageManage = /** @class */ (function () {
      *
      * @param players
      */
-    StageManage.prototype.ToResult = function (players, flag) {
+    StageManage.prototype.ToResult = function (players, obj, flag) {
         Laya.stage.removeChildren();
-        var res = new Result(players, flag);
+        var res = new Result(players, obj, flag);
         Laya.stage.addChild(res);
     };
     StageManage._instance = null;

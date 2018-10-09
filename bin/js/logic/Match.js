@@ -332,12 +332,12 @@ var Match = /** @class */ (function (_super) {
             //显示我自己的信息
             this.addPlayerList(GameData.myUser.userID, GameData.myUser.name, GameData.myUser.avatar, tableID, this.isOwner);
             if (this.joinFlag == Match.JOINFLAG.WITHROOMID) {
-                this.match_title.text = data.roomInfo.roomID;
-                this._roomID = data.roomInfo.roomID;
+                this.match_title.text = "房间号：" + data.roomInfo.roomID;
             }
             else {
                 this.match_title.text = "匹配成功——等待其他人...";
             }
+            this._roomID = data.roomInfo.roomID;
             this.matchFlag = true;
             //如果房间有其他人就显示别人信息
             var userList = data.userList;
@@ -440,7 +440,7 @@ var Match = /** @class */ (function (_super) {
     Match.prototype.startBattle = function () {
         console.info("开始游戏");
         this.removeMvsListener();
-        StageManage.getInstance.ToBattle(this.playerList, this.chk_FrameSysc.selected);
+        StageManage.getInstance.ToBattle(this.playerList, this.chk_FrameSysc.selected, { roomID: this._roomID });
     };
     Match.prototype.cancelStart = function (userID, roomID) {
         this.btn_cancel.visible = true;
@@ -448,7 +448,7 @@ var Match = /** @class */ (function (_super) {
         //取消倒计时
         Laya.timer.clear(this, this.countDown);
         if (this.joinFlag == Match.JOINFLAG.WITHROOMID || this.joinFlag == Match.JOINFLAG.CREATEROOM) {
-            this.match_title.text = roomID;
+            this.match_title.text = "房间号：" + roomID;
         }
         else {
             this.match_title.text = "匹配成功——等待其他人...";
@@ -470,7 +470,7 @@ var Match = /** @class */ (function (_super) {
             }
             //显示我自己的信息
             this.addPlayerList(GameData.myUser.userID, GameData.myUser.name, GameData.myUser.avatar, tableID, this.isOwner);
-            this.match_title.text = data.roomID;
+            this.match_title.text = "房间号：" + data.roomID;
             this._roomID = data.roomID;
             this.matchFlag = true;
         }

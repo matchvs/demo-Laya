@@ -18,6 +18,7 @@ class Premise extends ui.PremiseUI{
         this.addMvsListener();
 
         this.btn_ok.on(Laya.Event.CLICK,this,this.btnOkClick);
+        this.btn_back.on(Laya.Event.CLICK, this, this.btn_backClick);
     }
 
      /**
@@ -83,6 +84,10 @@ class Premise extends ui.PremiseUI{
 
     private btnOkClick(e:Laya.Event){
         mvs.MsEngine.getInstance.premiseInit(this.txt_endPoint.text, Number(this.txt_gameID.text));
+    }
+
+    private btn_backClick(e:Laya.Event){
+        StageManage.getInstance.ToLogin();
     }
 
 }

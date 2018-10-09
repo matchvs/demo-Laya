@@ -2,8 +2,8 @@
     "x":0,
     "type":"View",
     "selectedBox":1,
-    "selecteID":10,
-    "props":{"width":1136,"sceneColor":"#000000","height":640},
+    "selecteID":11,
+    "props":{"width":1280,"sceneColor":"#000000","height":720},
     "nodeParent":-1,
     "label":"View",
     "isOpen":true,
@@ -14,22 +14,8 @@
     "child":[
         {
             "x":15,
-            "type":"Rect",
-            "props":{"y":0,"x":0,"width":1136,"lineWidth":1,"height":640,"fillColor":"#0f444e"},
-            "nodeParent":1,
-            "label":"Rect",
-            "isDirectory":false,
-            "isAniNode":true,
-            "hasChild":false,
-            "compId":2,
-            "child":[
-                ],
-            "$LOCKED":true
-        },
-        {
-            "x":15,
             "type":"Image",
-            "props":{"y":0,"x":0,"width":1136,"skin":"mvs/bg.jpg","sizeGrid":"0,0,0,0,1","height":640},
+            "props":{"y":0,"x":0,"width":1280,"skin":"mvs/bg.jpg","sizeGrid":"0,0,0,0,1","height":720},
             "nodeParent":1,
             "label":"Image",
             "isDirectory":false,
@@ -44,7 +30,7 @@
         {
             "x":15,
             "type":"TextInput",
-            "props":{"y":296,"x":307,"wordWrap":true,"width":522,"var":"txt_secretKey","skin":"mvs/inputBox.png","sizeGrid":"2,2,2,2","rotation":0,"restrict":"a-zA-Z","prompt":"请输入secretKey","padding":"0","name":"txt_secretKey","height":54,"fontSize":20,"color":"#000000","align":"left"},
+            "props":{"y":342,"x":391,"wordWrap":true,"width":522,"var":"txt_secretKey","skin":"mvs/inputBox.png","sizeGrid":"2,2,2,2","rotation":0,"restrict":"a-zA-Z","prompt":"请输入secretKey","padding":"0","name":"txt_secretKey","height":54,"fontSize":20,"color":"#000000","align":"left"},
             "nodeParent":1,
             "label":"TextInput(txt_secretKey)",
             "isDirectory":false,
@@ -57,7 +43,7 @@
         {
             "x":15,
             "type":"TextInput",
-            "props":{"y":355,"x":307,"wordWrap":true,"width":522,"var":"txt_userID","skin":"mvs/inputBox.png","sizeGrid":"2,2,2,2","rotation":0,"restrict":"a-zA-Z","prompt":"请输入userID","padding":"0","name":"txt_userID","height":54,"fontSize":20,"color":"#000000","align":"left"},
+            "props":{"y":401,"x":391,"wordWrap":true,"width":522,"var":"txt_userID","skin":"mvs/inputBox.png","sizeGrid":"2,2,2,2","rotation":0,"restrict":"a-zA-Z","prompt":"请输入userID","padding":"0","name":"txt_userID","height":54,"fontSize":20,"color":"#000000","align":"left"},
             "nodeParent":1,
             "label":"TextInput(txt_userID)",
             "isDirectory":false,
@@ -70,7 +56,7 @@
         {
             "x":15,
             "type":"TextInput",
-            "props":{"y":238,"x":307,"wordWrap":true,"width":522,"var":"txt_appKey","skin":"mvs/inputBox.png","sizeGrid":"2,2,2,2","rotation":0,"restrict":"a-zA-Z","prompt":"请输入appKey","padding":"0","name":"txt_appKey","height":54,"fontSize":20,"color":"#000000","align":"left"},
+            "props":{"y":284,"x":391,"wordWrap":true,"width":522,"var":"txt_appKey","skin":"mvs/inputBox.png","sizeGrid":"2,2,2,2","rotation":0,"restrict":"a-zA-Z","prompt":"请输入appKey","padding":"0","name":"txt_appKey","height":54,"fontSize":20,"color":"#000000","align":"left"},
             "nodeParent":1,
             "label":"TextInput(txt_appKey)",
             "isDirectory":false,
@@ -83,7 +69,7 @@
         {
             "x":15,
             "type":"TextInput",
-            "props":{"y":179,"x":307,"wordWrap":true,"width":522,"var":"txt_gameID","skin":"mvs/inputBox.png","sizeGrid":"2,2,2,2","rotation":0,"restrict":"a-zA-Z","prompt":"请输入gameID","padding":"0","name":"txt_gameID","height":54,"fontSize":20,"color":"#000000","align":"left"},
+            "props":{"y":225,"x":391,"wordWrap":true,"width":522,"var":"txt_gameID","skin":"mvs/inputBox.png","sizeGrid":"2,2,2,2","rotation":0,"restrict":"a-zA-Z","prompt":"请输入gameID","padding":"0","name":"txt_gameID","height":54,"fontSize":20,"color":"#000000","align":"left"},
             "nodeParent":1,
             "label":"TextInput(txt_gameID)",
             "isDirectory":false,
@@ -96,7 +82,7 @@
         {
             "x":15,
             "type":"TextInput",
-            "props":{"y":121,"x":307,"wordWrap":true,"width":522,"var":"txt_endPoint","skin":"mvs/inputBox.png","sizeGrid":"2,2,2,2","rotation":0,"restrict":"a-zA-Z","prompt":"请输入服务地址","padding":"0","name":"txt_endPoint","height":54,"fontSize":20,"color":"#000000","align":"left"},
+            "props":{"y":167,"x":391,"wordWrap":true,"width":522,"var":"txt_endPoint","skin":"mvs/inputBox.png","sizeGrid":"2,2,2,2","rotation":0,"restrict":"a-zA-Z","prompt":"请输入服务地址","padding":"0","name":"txt_endPoint","height":54,"fontSize":20,"color":"#000000","align":"left"},
             "nodeParent":1,
             "label":"TextInput(txt_endPoint)",
             "isDirectory":false,
@@ -109,7 +95,7 @@
         {
             "x":15,
             "type":"TextInput",
-            "props":{"y":413,"x":307,"wordWrap":true,"width":522,"var":"txt_token","skin":"mvs/inputBox.png","sizeGrid":"2,2,2,2","rotation":0,"restrict":"a-zA-Z","prompt":"请输入token","padding":"0","name":"txt_token","height":54,"fontSize":20,"color":"#000000","align":"left"},
+            "props":{"y":459,"x":391,"wordWrap":true,"width":522,"var":"txt_token","skin":"mvs/inputBox.png","sizeGrid":"2,2,2,2","rotation":0,"restrict":"a-zA-Z","prompt":"请输入token","padding":"0","name":"txt_token","height":54,"fontSize":20,"color":"#000000","align":"left"},
             "nodeParent":1,
             "label":"TextInput(txt_token)",
             "isDirectory":false,
@@ -122,7 +108,7 @@
         {
             "x":15,
             "type":"Button",
-            "props":{"y":516,"width":200,"var":"btn_ok","stateNum":"1","skin":"mvs/btn1.png","sizeGrid":"5,5,5,5","name":"btn_ok","labelSize":28,"labelBold":true,"label":"确定","height":60,"centerX":0},
+            "props":{"y":522,"width":315,"var":"btn_ok","stateNum":"1","skin":"mvs/btn1.png","sizeGrid":"5,5,5,5","name":"btn_ok","labelSize":28,"labelColors":"#ffffff","labelBold":false,"label":"确定","height":70,"centerX":-89},
             "nodeParent":1,
             "label":"Button(btn_ok)",
             "isDirectory":false,
@@ -135,9 +121,9 @@
         {
             "x":15,
             "type":"Button",
-            "props":{"y":595,"x":1080,"stateNum":"1","skin":"mvs/exit.png"},
+            "props":{"y":522,"x":714,"width":200,"var":"btn_back","stateNum":"1","skin":"mvs/clear.png","name":"btn_back","labelSize":28,"labelColors":"#00C1E0","label":"返回","height":70},
             "nodeParent":1,
-            "label":"Button",
+            "label":"Button(btn_back)",
             "isDirectory":false,
             "isAniNode":true,
             "hasChild":false,
@@ -148,7 +134,7 @@
         {
             "x":15,
             "type":"Label",
-            "props":{"y":50,"x":341,"width":454,"text":"Matchvs服务独立部署","height":70,"fontSize":42,"font":"Microsoft YaHei","color":"#ffffff","bold":true,"align":"center"},
+            "props":{"y":50,"x":413,"width":454,"text":"Matchvs服务独立部署","height":70,"fontSize":48,"font":"Microsoft YaHei","color":"#ffffff","bold":false,"align":"center"},
             "nodeParent":1,
             "label":"Label",
             "isDirectory":false,

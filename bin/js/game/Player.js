@@ -18,6 +18,7 @@ var Player = /** @class */ (function (_super) {
         _this.tableID = 0;
         _this.isOwner = false;
         _this.score = 0;
+        _this.roomID = "";
         return _this;
     }
     return Player;

@@ -2,8 +2,8 @@
     "x":0,
     "type":"View",
     "selectedBox":1,
-    "selecteID":3,
-    "props":{"width":1136,"staticCache":false,"sceneColor":"#000000","height":640},
+    "selecteID":23,
+    "props":{"width":1280,"staticCache":false,"sceneColor":"#000000","height":720},
     "nodeParent":-1,
     "label":"View",
     "isOpen":true,
@@ -15,7 +15,7 @@
         {
             "x":15,
             "type":"Rect",
-            "props":{"y":0,"x":0,"width":1136,"lineWidth":1,"lineColor":"#f1eeee","height":640,"fillColor":"#8dab84"},
+            "props":{"y":0,"x":0,"width":1280,"lineWidth":1,"lineColor":"#f1eeee","height":720,"fillColor":"#8dab84"},
             "nodeParent":1,
             "label":"Rect",
             "isDirectory":false,
@@ -30,7 +30,7 @@
         {
             "x":15,
             "type":"Image",
-            "props":{"y":0,"x":0,"width":1136,"skin":"mvs/bg.jpg","sizeGrid":"0,0,0,0,1","height":640},
+            "props":{"y":0,"x":0,"width":1280,"skin":"mvs/bg.jpg","sizeGrid":"0,0,0,0,1","height":720},
             "nodeParent":1,
             "label":"Image",
             "isOpen":true,
@@ -39,38 +39,54 @@
             "hasChild":false,
             "compId":3,
             "child":[
-                ]
+                ],
+            "$LOCKED":true
         },
         {
             "x":15,
-            "type":"Image",
-            "props":{"y":132,"width":600,"skin":"mvs/note.png","height":388,"centerX":0},
+            "type":"Button",
+            "props":{"y":570,"x":520,"width":240,"var":"btn_exit","stateNum":"1","skin":"mvs/btn1.png","labelSize":24,"labelColors":"#ffffff","label":"离开游戏","height":70},
             "nodeParent":1,
-            "label":"Image",
+            "label":"Button(btn_exit)",
             "isDirectory":false,
             "isAniNode":true,
             "hasChild":false,
-            "compId":23,
+            "compId":22,
             "child":[
                 ]
         },
         {
             "x":15,
+            "type":"Label",
+            "props":{"y":115,"x":397,"width":494,"var":"txt_roomID","text":"房间号：183829939101299392","stroke":0,"name":"txt_roomID","height":37,"fontSize":24,"font":"Microsoft YaHei","color":"#ffffff","bold":false,"align":"center"},
+            "nodeParent":1,
+            "label":"Label(txt_roomID)",
+            "isOpen":true,
+            "isDirectory":false,
+            "isAniNode":true,
+            "hasChild":false,
+            "compId":24,
+            "child":[
+                ],
+            "$LOCKED":false
+        },
+        {
+            "x":15,
             "type":"Panel",
-            "props":{"y":224,"width":421,"height":253,"centerX":0},
+            "props":{"y":206,"x":400,"width":485,"height":323},
             "nodeParent":1,
             "label":"Panel",
             "isOpen":true,
             "isDirectory":true,
             "isAniNode":true,
             "hasChild":true,
-            "compId":20,
+            "compId":25,
             "child":[
                 {
                     "x":30,
                     "type":"Image",
-                    "props":{"y":3,"width":417,"visible":true,"skin":"mvs/itembg.png","sizeGrid":"5,5,5,5","height":80},
-                    "nodeParent":20,
+                    "props":{"y":0,"width":480,"visible":true,"skin":"mvs/inputBox.png","sizeGrid":"5,5,5,5","height":100},
+                    "nodeParent":25,
                     "label":"Image",
                     "isOpen":false,
                     "isDirectory":false,
@@ -84,8 +100,8 @@
                 {
                     "x":30,
                     "type":"Image",
-                    "props":{"x":8,"width":87,"var":"img_Player0","skin":"http://193.112.47.13/headimg/1.jpg","sizeGrid":"0,0,0,0","pivotX":-1,"name":"img_Player0","height":85},
-                    "nodeParent":20,
+                    "props":{"y":9,"x":8,"width":87,"var":"img_Player0","skin":"http://193.112.47.13/headimg/1.jpg","sizeGrid":"0,0,0,0","pivotX":-1,"name":"img_Player0","height":85},
+                    "nodeParent":25,
                     "label":"Image(img_Player0)",
                     "isOpen":false,
                     "isDirectory":true,
@@ -122,8 +138,8 @@
                 {
                     "x":30,
                     "type":"Label",
-                    "props":{"y":33,"x":103,"width":300,"var":"name_player0","text":"用户1","name":"name_player0","height":24,"fontSize":18,"color":"#060606","align":"center"},
-                    "nodeParent":20,
+                    "props":{"y":42,"x":103,"width":300,"var":"name_player0","text":"用户1","name":"name_player0","height":24,"fontSize":18,"color":"#060606","align":"center"},
+                    "nodeParent":25,
                     "label":"Label(name_player0)",
                     "isDirectory":false,
                     "isAniNode":true,
@@ -135,8 +151,8 @@
                 {
                     "x":30,
                     "type":"Image",
-                    "props":{"y":85,"width":417,"visible":true,"skin":"mvs/itembg.png","sizeGrid":"5,5,5,5","height":80},
-                    "nodeParent":20,
+                    "props":{"y":108,"x":0,"width":480,"visible":true,"skin":"mvs/inputBox.png","sizeGrid":"5,5,5,5","height":100},
+                    "nodeParent":25,
                     "label":"Image",
                     "isOpen":false,
                     "isDirectory":false,
@@ -150,8 +166,8 @@
                 {
                     "x":30,
                     "type":"Image",
-                    "props":{"y":82,"x":8,"width":87,"var":"img_Player1","skin":"http://193.112.47.13/headimg/1.jpg","sizeGrid":"0,0,0,0","pivotX":-1,"name":"img_Player1","height":85},
-                    "nodeParent":20,
+                    "props":{"y":115,"x":8,"width":87,"var":"img_Player1","skin":"http://193.112.47.13/headimg/1.jpg","sizeGrid":"0,0,0,0","pivotX":-1,"name":"img_Player1","height":85},
+                    "nodeParent":25,
                     "label":"Image(img_Player1)",
                     "isOpen":false,
                     "isDirectory":true,
@@ -188,8 +204,8 @@
                 {
                     "x":30,
                     "type":"Label",
-                    "props":{"y":115,"x":103,"width":300,"var":"name_player1","text":"用户1","name":"name_player1","height":25,"fontSize":18,"color":"#060606","align":"center"},
-                    "nodeParent":20,
+                    "props":{"y":144,"x":103,"width":300,"var":"name_player1","text":"用户1","name":"name_player1","height":25,"fontSize":18,"color":"#060606","align":"center"},
+                    "nodeParent":25,
                     "label":"Label(name_player1)",
                     "isDirectory":false,
                     "isAniNode":true,
@@ -201,8 +217,8 @@
                 {
                     "x":30,
                     "type":"Image",
-                    "props":{"y":168,"width":417,"visible":true,"skin":"mvs/itembg.png","sizeGrid":"5,5,5,5","height":80},
-                    "nodeParent":20,
+                    "props":{"y":216,"width":480,"visible":true,"skin":"mvs/inputBox.png","sizeGrid":"5,5,5,5","height":100},
+                    "nodeParent":25,
                     "label":"Image",
                     "isOpen":false,
                     "isDirectory":false,
@@ -216,8 +232,8 @@
                 {
                     "x":30,
                     "type":"Image",
-                    "props":{"y":165,"x":8,"width":87,"var":"img_Player2","skin":"http://193.112.47.13/headimg/1.jpg","sizeGrid":"0,0,0,0","pivotX":-1,"name":"img_Player2","height":85},
-                    "nodeParent":20,
+                    "props":{"y":223,"x":8,"width":87,"var":"img_Player2","skin":"http://193.112.47.13/headimg/1.jpg","sizeGrid":"0,0,0,0","pivotX":-1,"name":"img_Player2","height":85},
+                    "nodeParent":25,
                     "label":"Image(img_Player2)",
                     "isOpen":true,
                     "isDirectory":true,
@@ -256,8 +272,8 @@
                 {
                     "x":30,
                     "type":"Label",
-                    "props":{"y":198,"x":103,"width":300,"var":"name_player2","text":"用户1","name":"name_player2","height":24,"fontSize":18,"color":"#060606","align":"center"},
-                    "nodeParent":20,
+                    "props":{"y":256,"x":103,"width":300,"var":"name_player2","text":"用户1","name":"name_player2","height":24,"fontSize":18,"color":"#060606","align":"center"},
+                    "nodeParent":25,
                     "label":"Label(name_player2)",
                     "isDirectory":false,
                     "isAniNode":true,
@@ -269,31 +285,18 @@
         },
         {
             "x":15,
-            "type":"Button",
-            "props":{"y":579,"x":1063,"var":"btn_exit","stateNum":"1","skin":"mvs/exit.png"},
-            "nodeParent":1,
-            "label":"Button(btn_exit)",
-            "isDirectory":false,
-            "isAniNode":true,
-            "hasChild":false,
-            "compId":22,
-            "child":[
-                ]
-        },
-        {
-            "x":15,
             "type":"Label",
-            "props":{"y":166,"width":503,"text":"结算","stroke":1,"height":37,"fontSize":28,"font":"Microsoft YaHei","color":"#000000","centerX":0,"bold":false,"align":"center"},
+            "props":{"y":56,"x":568,"width":144,"text":"游戏结果","stroke":0,"height":48,"fontSize":36,"font":"Microsoft YaHei","color":"#ffffff","bold":false,"align":"left"},
             "nodeParent":1,
             "label":"Label",
             "isOpen":true,
             "isDirectory":false,
             "isAniNode":true,
             "hasChild":false,
-            "compId":24,
+            "compId":26,
             "child":[
                 ],
-            "$LOCKED":true
+            "$LOCKED":false
         }],
     "animations":[
         {

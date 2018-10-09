@@ -9,7 +9,7 @@ class GameMain{
     constructor()
     {
         Laya.MiniAdpter.init();
-        Laya.init(1134,640, WebGL);
+        Laya.init(1280,720, WebGL);
         Laya.stage.scaleMode = Laya.Stage.SCALE_SHOWALL;
         Laya.stage.alignH = "center";
         Laya.stage.alignV = "center";

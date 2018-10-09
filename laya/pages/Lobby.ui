@@ -2,8 +2,8 @@
     "x":0,
     "type":"View",
     "selectedBox":1,
-    "selecteID":30,
-    "props":{"width":1136,"sceneColor":"#000000","height":640,"alpha":1},
+    "selecteID":33,
+    "props":{"width":1280,"sceneColor":"#000000","height":720,"alpha":1},
     "nodeParent":-1,
     "label":"View",
     "isOpen":true,
@@ -14,23 +14,8 @@
     "child":[
         {
             "x":15,
-            "type":"Rect",
-            "props":{"y":0,"x":0,"width":1136,"lineWidth":1,"height":640,"fillColor":"#507278"},
-            "nodeParent":1,
-            "label":"Rect",
-            "isDirectory":false,
-            "isAniNode":true,
-            "hasChild":false,
-            "compId":29,
-            "child":[
-                ],
-            "$LOCKED":true,
-            "$HIDDEN":false
-        },
-        {
-            "x":15,
             "type":"Image",
-            "props":{"y":0,"x":0,"width":1136,"visible":true,"skin":"mvs/bg.jpg","sizeGrid":"0,0,0,0,1","height":640,"alpha":1},
+            "props":{"y":0,"x":0,"width":1280,"visible":true,"skin":"mvs/bg.jpg","sizeGrid":"0,0,0,0,1","height":720,"alpha":1},
             "nodeParent":1,
             "label":"Image",
             "isDirectory":false,
@@ -45,7 +30,7 @@
         {
             "x":15,
             "type":"Button",
-            "props":{"y":179,"width":200,"var":"btn_randMatch","stateNum":"1","skin":"mvs/btnbg.png","sizeGrid":"5,5,5,5","name":"btn_randMatch","labelStrokeColor":"#c0d4d1","labelStroke":2,"labelSize":28,"labelBold":true,"label":"随机匹配","height":200,"centerX":-335,"alpha":1},
+            "props":{"y":205,"x":309,"width":192,"var":"btn_randMatch","name":"btn_randMatch","labelSize":48,"labelColors":"#FFFFFF","label":"随机匹配","height":67,"alpha":1},
             "nodeParent":1,
             "label":"Button(btn_randMatch)",
             "isDirectory":false,
@@ -58,7 +43,7 @@
         {
             "x":15,
             "type":"Button",
-            "props":{"y":283,"width":200,"var":"btn_joinWithProperty","stateNum":"1","skin":"mvs/btnbg.png","sizeGrid":"5,5,5,5","labelStrokeColor":"#c0d4d1","labelStroke":2,"labelSize":28,"labelBold":true,"label":"属性匹配","height":200,"centerX":-132,"alpha":1},
+            "props":{"y":330,"x":309,"width":196,"var":"btn_joinWithProperty","sizeGrid":"5,5,5,5","labelStroke":0,"labelSize":28,"labelColors":"#ffffff","labelBold":false,"label":"自定义属性匹配","height":40,"alpha":1},
             "nodeParent":1,
             "label":"Button(btn_joinWithProperty)",
             "isDirectory":false,
@@ -71,7 +56,7 @@
         {
             "x":15,
             "type":"Button",
-            "props":{"y":184,"width":200,"var":"btn_createRoom","stateNum":"1","skin":"mvs/btnbg.png","sizeGrid":"5,5,5,5","labelStrokeColor":"#c0d4d1","labelStroke":2,"labelSize":28,"labelBold":true,"label":"创建房间","height":200,"centerX":81,"alpha":1},
+            "props":{"y":205,"x":812,"width":196,"var":"btn_createRoom","sizeGrid":"5,5,5,5","labelStroke":0,"labelSize":48,"labelColors":"#ffffff","label":"创建房间","height":67,"alpha":1},
             "nodeParent":1,
             "label":"Button(btn_createRoom)",
             "isDirectory":false,
@@ -84,7 +69,7 @@
         {
             "x":15,
             "type":"Button",
-            "props":{"y":275,"width":200,"var":"btn_geRoomList","stateNum":"1","skin":"mvs/btnbg.png","sizeGrid":"5,5,5,5","name":"btn_geRoomList","labelStrokeColor":"#c0d4d1","labelStroke":2,"labelSize":28,"labelBold":true,"label":"房间列表","height":200,"centerX":286},
+            "props":{"y":330,"x":812,"width":196,"var":"btn_geRoomList","sizeGrid":"5,5,5,5","name":"btn_geRoomList","labelStrokeColor":"#c0d4d1","labelStroke":0,"labelSize":28,"labelColors":"#ffffff","label":"查看房间列表","height":40},
             "nodeParent":1,
             "label":"Button(btn_geRoomList)",
             "isDirectory":false,
@@ -97,22 +82,7 @@
         {
             "x":15,
             "type":"Image",
-            "props":{"y":574,"x":60,"width":298,"skin":"mvs/itembg.png","height":51},
-            "nodeParent":1,
-            "label":"Image",
-            "isOpen":false,
-            "isDirectory":false,
-            "isAniNode":true,
-            "hasChild":false,
-            "compId":16,
-            "child":[
-                ],
-            "$HIDDEN":false
-        },
-        {
-            "x":15,
-            "type":"Image",
-            "props":{"y":556,"x":-3,"width":85,"var":"img_header","skin":"http://193.112.47.13/headimg/1.jpg","sizeGrid":"0,0,0,0","pivotX":-1,"height":90},
+            "props":{"y":29,"x":941,"width":85,"var":"img_header","skin":"http://193.112.47.13/headimg/1.jpg","sizeGrid":"0,0,0,0","pivotX":-1,"height":90},
             "nodeParent":1,
             "label":"Image(img_header)",
             "isOpen":false,
@@ -150,7 +120,7 @@
         {
             "x":15,
             "type":"Label",
-            "props":{"y":589,"x":83,"wordWrap":true,"width":255,"var":"name_head","text":"用户昵称","height":24,"fontSize":18,"color":"#000000","align":"left"},
+            "props":{"y":63,"x":1028,"wordWrap":true,"width":227,"var":"name_head","text":"用户昵称","height":24,"fontSize":18,"color":"#999999","align":"left"},
             "nodeParent":1,
             "label":"Label(name_head)",
             "isOpen":true,
@@ -164,7 +134,7 @@
         {
             "x":15,
             "type":"Button",
-            "props":{"y":582,"x":1067,"var":"btn_exit","stateNum":"1","skin":"mvs/exit.png"},
+            "props":{"y":63,"x":61,"width":36,"var":"btn_exit","stateNum":"1","skin":"mvs/icon_back.png","height":36},
             "nodeParent":1,
             "label":"Button(btn_exit)",
             "isDirectory":false,
@@ -177,13 +147,39 @@
         {
             "x":15,
             "type":"Label",
-            "props":{"y":50,"x":379,"width":400,"text":"游戏大厅","height":70,"fontSize":42,"font":"Microsoft YaHei","color":"#ffffff","bold":true,"align":"center"},
+            "props":{"y":56,"x":120,"width":177,"text":"游戏大厅","height":49,"fontSize":36,"font":"Microsoft YaHei","color":"#ffffff","bold":false,"align":"left"},
             "nodeParent":1,
             "label":"Label",
             "isDirectory":false,
             "isAniNode":true,
             "hasChild":false,
             "compId":30,
+            "child":[
+                ]
+        },
+        {
+            "x":15,
+            "type":"Image",
+            "props":{"y":219,"x":250,"width":30,"skin":"mvs/icon_arrow_left.png","height":40},
+            "nodeParent":1,
+            "label":"Image",
+            "isDirectory":false,
+            "isAniNode":true,
+            "hasChild":false,
+            "compId":32,
+            "child":[
+                ]
+        },
+        {
+            "x":15,
+            "type":"Image",
+            "props":{"y":219,"x":756,"width":30,"skin":"mvs/icon_arrow_left.png","height":40},
+            "nodeParent":1,
+            "label":"Image",
+            "isDirectory":false,
+            "isAniNode":true,
+            "hasChild":false,
+            "compId":33,
             "child":[
                 ]
         }],
