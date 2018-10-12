@@ -422,7 +422,7 @@ var Match = /** @class */ (function (_super) {
             Laya.timer.clearAll(this);
         }
         else {
-            console.info("人数不够");
+            console.info("倒计时中当前人数：", this.playerList.length);
         }
     };
     Match.prototype.joinOverRsp = function (e) {
@@ -518,6 +518,7 @@ var Match = /** @class */ (function (_super) {
      */
     Match.prototype.wipePlayerLocation = function (userID, owner) {
         this.delPlayerList(userID);
+        this.isOwner = owner == GameData.myUser.userID;
         for (var i = 0; i < this.playerList.length; i++) {
             if (owner == this.playerList[i].userID) {
                 this.playerList[i].isOwner = true;

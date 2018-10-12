@@ -242,7 +242,7 @@ var mvs;
         MsResponse.prototype.setFrameSyncResponse = function (rsp) {
             //console.info("[setFrameSyncResponse] "+JSON.stringify(rsp));
             var data = {
-                mStatus: rsp.mStatus
+                status: rsp.mStatus
             };
             this.event(mvs.MsEvent.EVENT_SETFRAMESYNC_RSP, new mvs.MsEventData(data));
         };

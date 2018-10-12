@@ -48595,8 +48595,8 @@ function getNowFormatDate() {
 MatchvsLog.openLog = function () {
     console.log("---- open log ----");
     if (typeof (wx) === "undefined") {
-        MatchvsLog.logI = console.log.bind(console, "[INFO ] " + " ");
-        MatchvsLog.logE = console.error.bind(console, "[ERROR] " + " ");
+        MatchvsLog.logI = console.log.bind(console, "[INFO][Matchvs] " + " ");
+        MatchvsLog.logE = console.error.bind(console, "[ERROR][Matchvs] " + " ");
     }
     else {
         MatchvsLog.logI = function () {
@@ -48608,7 +48608,7 @@ MatchvsLog.openLog = function () {
                 var line = e.stack.split(/\n/)[1];
                 loc = line.slice(line.lastIndexOf("/") + 1, line.lastIndexOf(")"));
             }
-            console.info("[INFO ] " + getNowFormatDate() + " " + this.toArray(arguments) + " " + loc);
+            console.info("[INFO][Matchvs] " + getNowFormatDate() + " " + this.toArray(arguments) + " " + loc);
         };
         MatchvsLog.logE = function () {
             var loc = "";
@@ -48619,7 +48619,7 @@ MatchvsLog.openLog = function () {
                 var line = e.stack.split(/\n/)[1];
                 loc = line.slice(line.lastIndexOf("/") + 1, line.lastIndexOf(")"));
             }
-            console.error("[ERROR] " + getNowFormatDate() + " " + this.toArray(arguments) + " " + loc);
+            console.error("[ERROR][Matchvs] " + getNowFormatDate() + " " + this.toArray(arguments) + " " + loc);
         };
     }
 };
@@ -48656,7 +48656,8 @@ var ENMU_MVS_PTF = {
     MVS_WX: 2
 };
 var MVSCONFIG = {
-    MAXPLAYER_LIMIT: 20,
+    MAXPLAYER_LIMIT: 100,
+    MINPLAYER_LIMIT: 2,
     MVS_PTF_ADATPER: ENMU_MVS_PTF.MVS_COMMON //如果是白鹭适配就需要填 1
 };
 var HttpConf = {
@@ -48815,6 +48816,13 @@ function isIE() {
 function getHotelUrl(bookInfo) {
     return "wss://" + bookInfo.getWssproxy() + "/proxy?hotel=" + bookInfo.getHoteladdr();
 }
+/**
+ * 检测engine状态
+ * @param engineState
+ * @param roomLoock
+ * @param type
+ * @returns {number}
+ */
 function commEngineStateCheck(engineState, roomLoock, type) {
     var resNo = 0;
     if ((engineState & ENGE_STATE.HAVE_INIT) !== ENGE_STATE.HAVE_INIT)
@@ -48851,7 +48859,43 @@ function commEngineStateCheck(engineState, roomLoock, type) {
         MatchvsLog.logI("error code:" + resNo + " see the error documentation : http://www.matchvs.com/service?page=js");
     }
     return resNo;
-} /* ================ mspb.js ================= */
+}
+var MvsTicker = (function (obj) {
+    var _tickMap = {};
+    var _count = 0;
+    function MvsTicker() {
+    }
+    if ("undefined" !== typeof (BK)) {
+        MvsTicker.prototype.setInterval = function (callback, interval) {
+            var t = new BK.Ticker();
+            t.interval = interval * 6 / 100;
+            t.setTickerCallBack(callback);
+            var flag = ++_count;
+            _tickMap[flag] = t;
+            return flag;
+        };
+        MvsTicker.prototype.clearInterval = function (flag) {
+            var ti = _tickMap[flag];
+            if (ti) {
+                ti.dispose();
+                delete _tickMap[flag];
+            }
+        };
+    }
+    else {
+        MvsTicker.prototype.setInterval = function (callback, interval) {
+            return setInterval(callback, interval);
+        };
+        MvsTicker.prototype.clearInterval = function (flag) {
+            clearInterval(flag);
+        };
+    }
+    return MvsTicker;
+})(MvsTicker);
+var MVS = {
+    ticker: new MvsTicker()
+};
+/* ================ mspb.js ================= */
 (function e(t, n, r) {
     function s(o, u) {
         if (!n[o]) {
@@ -49698,7 +49742,8 @@ function commEngineStateCheck(engineState, roomLoock, type) {
                         goog.moduleLoaderState_ = b;
                     }
                 }, goog.loadModuleFromSource_ = function (a) {
-                    eval(a);
+                    //eval(a);
+                    console.log("eval(a) need open");
                     return {};
                 }, goog.writeScriptSrcNode_ = function (a) {
                     goog.global.document.write("<script type=\"text/javascript\" src=\"" + a + "\">\x3c/script>");
@@ -67672,6 +67717,109 @@ try {
             };
         };
     }
+    else if (typeof (BK) !== "undefined") {
+        MatchvsNetWork = function MatchvsNetWork(host, callback) {
+            var mCallBack = callback;
+            var mHost = host;
+            var socketMsgQueue = [];
+            var socketOpen = false;
+            var socket = new BK.WebSocket(host);
+            var that = this;
+            this.send = function (msg) {
+                if (socketOpen) {
+                    socket.send(msg.buffer);
+                }
+                else {
+                    if (socketMsgQueue.length < 100) {
+                        socketMsgQueue.push(msg);
+                    }
+                }
+            };
+            this.close = function () {
+                if (socket) {
+                    socket.close();
+                }
+            };
+            socket.onOpen = function (res) {
+                socketOpen = true;
+                MatchvsLog.logI("[BK.WebSocket][connect]:" + res);
+                while (socketMsgQueue.length > 0) {
+                    that.send(socketMsgQueue.pop());
+                }
+                mCallBack.onConnect && mCallBack.onConnect(mHost);
+            };
+            socket.onClose = function (res) {
+                socketOpen = false;
+                var e = { code: 1000, message: " close normal" };
+                mCallBack.onDisConnect && mCallBack.onDisConnect(mHost, e);
+                MatchvsLog.logI("[BK.WebSocket] [onClose] case:" + JSON.stringify(res));
+            };
+            socket.onError = function (err) {
+                if (socket && socketOpen) {
+                    socketOpen = false;
+                    socket.close();
+                }
+                var e = { code: err.getErrorCode(), message: err.getErrorString() };
+                if (e.code === 65535) {
+                    e.code = 1000;
+                }
+                mCallBack.onDisConnect && mCallBack.onDisConnect(mHost, e);
+                MatchvsLog.logI("[BK.WebSocket] [onError] case:" + JSON.stringify(err));
+            };
+            socket.onMessage = function (res, data) {
+                var buf = data.data;
+                buf.rewind();
+                var ab = new ArrayBuffer(buf.length);
+                var dataView = new DataView(ab);
+                while (!buf.eof) {
+                    dataView.setUint8(buf.pointer, buf.readUint8Buffer());
+                }
+                mCallBack.onMsg && mCallBack.onMsg(dataView);
+            };
+            if (socket) {
+                socket.connect();
+            }
+        };
+        MatchvsHttp = function MatchvsHttp(callback) {
+            this.mCallback = callback;
+            function send(url, call, isPost, params) {
+                var http = new BK.HttpUtil(url);
+                http.setHttpMethod(isPost ? "post" : "get");
+                http.setHttpHeader("Content-type", "application/x-www-form-urlencoded");
+                http.requestAsync(function (res, code) {
+                    if (code === 200) {
+                        var dt = res.readAsString(true);
+                        call.onMsg(dt);
+                        MatchvsLog.logI("[HTTP:](" + url + ")+" + dt);
+                    }
+                    else {
+                        call.onErr(code, res.readAsString(true));
+                    }
+                });
+                if (isPost) {
+                    http.setHttpPostData(params);
+                }
+                else {
+                    http.setHttpUrl(url);
+                }
+            }
+            /**
+             * HTTP GET
+             * @param url {String} ex:"http://testpay.matchvs.com/wc3/submitOrder.do?key=fa"
+             */
+            this.get = function (url) {
+                send(url, this.mCallback, false, null);
+            };
+            /**
+             * HTTP POST
+             * @param url {String} ex:"http://testpay.matchvs.com/wc3/submitOrder.do"
+             * @param params {String} ex:"lorem=ipsum&name=binny";
+             */
+            this.post = function (url, params) {
+                send(url, this.mCallback, true, params);
+            };
+        };
+    }
     else {
         MatchvsNetWork = function MatchvsNetWork(host, callback) {
             this.socket = null;
@@ -67691,7 +67839,7 @@ try {
                 }
                 if (this.socket.readyState === WebSocket.OPEN) {
                     //log(message);
-                    this.socket.send(message);
+                    this.socket.send(message.buffer);
                 }
                 else {
                     bufQueue.push(message);
@@ -68479,7 +68627,7 @@ function EngineNetworkMap() {
 var ErrorRspWork = function (ErrCall, code, message) {
     var tempmsg = "";
     if (MvsErrMsg[code] !== undefined) {
-        tempmsg = MvsErrMsg[code] + " " + message;
+        tempmsg = message + ". " + MvsErrMsg[code];
     }
     else {
         tempmsg = message;
@@ -68504,7 +68652,12 @@ var NetWorkCallBackImp = function (engine) {
      */
     this.clearAllBeatTimer = function () {
         while (this.hbTimers.length > 0) {
-            clearInterval(this.hbTimers.pop());
+            // if("undefined" !== typeof (BK)){
+            //     BK.Director.ticker.removeInterval(this.hbTimers.pop());
+            // }else{
+            //     clearInterval(this.hbTimers.pop());
+            // }
+            MVS.ticker.clearInterval(this.hbTimers.pop());
         }
     };
     this.onMsg = function (dataView) {
@@ -68534,11 +68687,11 @@ var NetWorkCallBackImp = function (engine) {
      */
     this.onConnect = function (host) {
         if (HttpConf.HOST_HOTEL_ADDR !== "" && host.indexOf(HttpConf.HOST_HOTEL_ADDR) >= 0) {
-            this.mHotelTimer = setInterval(engine.hotelHeartBeat, HEART_BEAT_INTERVAL);
+            this.mHotelTimer = MVS.ticker.setInterval(engine.hotelHeartBeat, HEART_BEAT_INTERVAL);
             this.hbTimers.push(this.mHotelTimer);
         }
         else if (HttpConf.HOST_GATWAY_ADDR !== "" && host.indexOf(HttpConf.HOST_GATWAY_ADDR) >= 0) {
-            this.gtwTimer = setInterval(engine.heartBeat, HEART_BEAT_INTERVAL);
+            this.gtwTimer = MVS.ticker.setInterval(engine.heartBeat, HEART_BEAT_INTERVAL);
             this.hbTimers.push(this.gtwTimer);
         }
         engine.mRsp.onConnect && engine.mRsp.onConnect(host);
@@ -68558,9 +68711,9 @@ var NetWorkCallBackImp = function (engine) {
             else {
                 this.clearAllBeatTimer();
                 engine.mHotelNetWork && engine.mHotelNetWork.close();
-                ErrorRspWork(engine.mRsp.errorResponse, MvsCode.NetWorkErr, "gateway network error");
+                ErrorRspWork(engine.mRsp.errorResponse, MvsCode.NetWorkErr, "(" + event.code + ") " + "gateway network error");
             }
-            clearInterval(this.gtwTimer);
+            MVS.ticker.clearInterval(this.gtwTimer);
         }
         else if (host.endsWith(HttpConf.HOST_HOTEL_ADDR)) {
             MatchvsLog.logI("hotel disconnect");
@@ -68571,10 +68724,10 @@ var NetWorkCallBackImp = function (engine) {
                 engine.mEngineState = ENGE_STATE.HAVE_INIT;
                 this.clearAllBeatTimer();
                 engine.mNetWork && engine.mNetWork.close();
-                ErrorRspWork(engine.mRsp.errorResponse, MvsCode.NetWorkErr, "hotel network error");
+                ErrorRspWork(engine.mRsp.errorResponse, MvsCode.NetWorkErr, "(" + event.code + ") " + "hotel network error");
             }
             //如果房间服务器断开了(包括异常断开情况)就把定时器关掉
-            clearInterval(this.mHotelTimer);
+            MVS.ticker.clearInterval(this.mHotelTimer);
             //退出房间状态取消,这里只能一个个状态取消，不能使用 = 号，不然出现先断开gateway 再断开 hotel状态码就不对
             engine.mEngineState &= ~ENGE_STATE.JOIN_ROOMING;
             engine.mEngineState &= ~ENGE_STATE.LEAVE_ROOMING;
@@ -68820,7 +68973,12 @@ function KickPlayerRspWork() {
 function KickPlayerNotifyWork() {
     this.doSubHandle = function (event, engine) {
         if (event.payload.getUserid().toString() === ("" + engine.mUserID) && event.hotelTimer != null) {
-            clearInterval(event.hotelTimer);
+            // if("undefined" !== typeof (BK)){
+            //     BK.Director.ticker.removeInterval(event.hotelTimer);
+            // }else{
+            //     clearInterval(event.hotelTimer);
+            // }
+            MVS.ticker.clearInterval(event.hotelTimer);
             engine.mEngineState &= ~ENGE_STATE.IN_ROOM;
             engine.mEngineState |= ENGE_STATE.HAVE_LOGIN;
             engine.mHotelNetWork.close();
@@ -68951,6 +69109,9 @@ function MatchvsEngine() {
      * @param {number} gameID
      */
     this.premiseInit = function (response, endPoint, gameID) {
+        if (undefined === endPoint || endPoint === "") {
+            return -1;
+        }
         this.mRsp = response;
         this.mGameID = gameID;
         HttpConf.HOST_GATWAY_ADDR = "wss://" + endPoint;
@@ -69048,19 +69209,21 @@ function MatchvsEngine() {
     };
     /**
      *
-     * @param createRoomInfo {MsCreateRoomInfo}
+     * @param cinfo {MsCreateRoomInfo}
      * @param userProfile
      * @returns {number}
      */
-    this.createRoom = function (createRoomInfo, userProfile) {
+    this.createRoom = function (cinfo, userProfile) {
         var ret = commEngineStateCheck(this.mEngineState, this.mEngineState, 2);
         if (ret !== 0)
             return ret;
         if (userProfile.length > 512)
             return -21;
-        var roomInfo = new RoomInfo(0, createRoomInfo.roomName, createRoomInfo.maxPlayer, createRoomInfo.mode, createRoomInfo.canWatch, createRoomInfo.visibility, createRoomInfo.roomProperty, 0);
+        if (cinfo.maxPlayer > MVSCONFIG.MAXPLAYER_LIMIT || cinfo.maxPlayer < MVSCONFIG.MINPLAYER_LIMIT)
+            return -20;
+        var roomInfo = new RoomInfo(0, cinfo.roomName, cinfo.maxPlayer, cinfo.mode, cinfo.canWatch, cinfo.visibility, cinfo.roomProperty, 0);
         var playInfo = new PlayerInfo(this.mUserID, userProfile);
-        var buf = this.mProtocol.roomCreate(createRoomInfo.maxPlayer, 0, this.mGameID, roomInfo, playInfo);
+        var buf = this.mProtocol.roomCreate(cinfo.maxPlayer, 0, this.mGameID, roomInfo, playInfo);
         if (buf.byteLength > 1024 || userProfile.length > 512)
             return -21;
         this.mEngineState |= ENGE_STATE.CREATEROOM; //设置用户正在创建房间
@@ -69110,7 +69273,7 @@ function MatchvsEngine() {
         var ret = commEngineStateCheck(this.mEngineState, this.mEngineState, 2);
         if (ret !== 0)
             return ret;
-        if (maxPlayer > MVSCONFIG.MAXPLAYER_LIMIT || maxPlayer <= 0)
+        if (maxPlayer > MVSCONFIG.MAXPLAYER_LIMIT || maxPlayer < MVSCONFIG.MINPLAYER_LIMIT)
             return -20;
         if (userProfile.length > 512)
             return -21;
@@ -69136,6 +69299,8 @@ function MatchvsEngine() {
             return -1;
         if (typeof userProfile !== "string")
             return -1;
+        if (matchinfo.maxPlayer > MVSCONFIG.MAXPLAYER_LIMIT || matchinfo.maxPlayer < MVSCONFIG.MINPLAYER_LIMIT)
+            return -20;
         var roomJoin = new MsRoomJoin(MsEnum.JoinRoomType.joinRoomWithProperty, this.mUserID, 1, this.mGameID, matchinfo.maxPlayer, matchinfo.mode, matchinfo.canWatch, userProfile, matchinfo.tags);
         var buf = this.mProtocol.joinRoomWithProperties(roomJoin);
         this.mEngineState |= ENGE_STATE.JOIN_ROOMING;
@@ -69421,7 +69586,7 @@ function MatchvsResponse() {
     };
     /**
      *
-     * @param srcUid {number}
+     * @param srcUserID {number}
      * @param groups {Array<string>}
      * @param cpProto {string}
      */
@@ -69544,6 +69709,9 @@ MatchvsEngine.prototype.heartBeat = function () {
     }
     else {
         roomID = Instance.mRoomInfo.getRoomid();
+    }
+    if ((Instance.mEngineState & ENGE_STATE.LOGOUTING) === ENGE_STATE.LOGOUTING) {
+        return;
     }
     var buf = Instance.mProtocol.heartBeat(Instance.mGameID, roomID);
     Instance.mNetWork.send(buf);
@@ -69727,7 +69895,6 @@ MatchvsEngine.prototype.registerUser = function () {
     var uri = "/wc3/regit.do";
     var url = HttpConf.REGISTER_USER_URL + uri + "?mac=0" + "&deviceid=" + deviceid + "&channel=" + channel + "&pid=13" + "&version=" + gameVersion;
     var rep = new MatchvsNetWorkCallBack();
-    new MatchvsHttp(rep).get(url);
     rep.rsp = this.mRsp.registerUserResponse;
     rep.onMsg = function (buf) {
         var obj = JSON.parse(buf);
@@ -69742,6 +69909,7 @@ MatchvsEngine.prototype.registerUser = function () {
     rep.onErr = function (errCode, errMsg) {
         this.rsp(new MsRegistRsp(errCode, 0, "0", errMsg, ""));
     };
+    new MatchvsHttp(rep).get(url);
     return 0;
 };
 /**
@@ -69756,7 +69924,6 @@ MatchvsEngine.prototype.getHostList = function () {
     var url = "https://sdk.matchvs.com" + uri + "?mac=0" + "&gameid=" + gameId + "&channel=" + channel + "&platform=" + platform + "&useWSSProxy=1";
     var rep = new MatchvsNetWorkCallBack();
     var engine = this;
-    new MatchvsHttp(rep).get(url);
     rep.onMsg = function (buf) {
         var obj = JSON.parse(buf);
         if (obj.status === 200) {
@@ -69779,6 +69946,7 @@ MatchvsEngine.prototype.getHostList = function () {
         console.error("getHostListErrCode" + errCode + " getHostListErrMsg" + errMsg);
         engine.mRsp.errorResponse(errCode, errMsg);
     };
+    new MatchvsHttp(rep).get(url);
     return 0;
 };
 /**
@@ -70127,7 +70295,6 @@ var mvs;
     var MsEngine = /** @class */ (function () {
         function MsEngine() {
             this._engine = null; //Matchvs 引擎
-            this._response = null;
             this._engine = new MatchvsEngine();
         }
         Object.defineProperty(MsEngine, "getInstance", {
@@ -70150,13 +70317,24 @@ var mvs;
          * @param {number} gameID
          */
         MsEngine.prototype.init = function (channel, platform, gameID) {
-            this._response = mvs.MsResponse.getInstance.getResponse();
             var res = this._engine.init(mvs.MsResponse.getInstance.getResponse(), channel, platform, gameID);
             if (res !== 200) {
                 console.info("[MsEngine init failed] resCode:", res);
                 return res;
             }
             console.info("[MsEngine init seccess] resCode:", res);
+            return res;
+        };
+        /**
+         * 独立部署的初始化
+         */
+        MsEngine.prototype.premiseInit = function (endPoint, gameID) {
+            var res = this._engine.premiseInit(mvs.MsResponse.getInstance.getResponse(), endPoint, gameID);
+            if (res !== 0) {
+                console.info("[MsEngine premiseInit failed] resCode:", res);
+                return res;
+            }
+            console.info("[MsEngine premiseInit seccess] resCode:", res);
             return res;
         };
         /**
@@ -70407,9 +70585,15 @@ var MsConfig = /** @class */ (function () {
     MsConfig.channel = "Matchvs";
     MsConfig.PLATFROM_TYPE = new PlatformType("alpha", "release");
     MsConfig.platfrom = MsConfig.PLATFROM_TYPE.alp;
+    //Matchvs 云托管游戏信息
     MsConfig.gameID = 201489;
     MsConfig.appKey = "4fb6406305f44f1aad0c40e5946ffe3d";
     MsConfig.secretKey = "5035d62b75bd4941b182579f2b8fc12c";
+    //独立部署游戏信息
+    MsConfig.preGameID = 1;
+    MsConfig.preAppKey = "appkey01";
+    MsConfig.preSecretKey = "appsecret01";
+    MsConfig.preEndPoint = "mt21gateway.matchvs.com";
     return MsConfig;
 }());
 //# sourceMappingURL=MsConfig.js.map
@@ -70450,13 +70634,15 @@ var StageManage = /** @class */ (function () {
         var s = new screen();
         Laya.stage.addChild(s);
     };
-    StageManage.prototype.ToBattle = function (players, isFrameSync, time) {
+    StageManage.prototype.ToBattle = function (players, isFrameSync, obj, time) {
         var bt = new Battle();
+        bt.setOtherInfo(obj);
         if (time) {
             bt.setGameTime(time);
         }
         if (bt.setPlayes(players) == 0) {
             if (isFrameSync) {
+                //打开帧同步功能
                 bt.openFrameSync(10);
             }
             Laya.stage.removeChildren();
@@ -70467,9 +70653,9 @@ var StageManage = /** @class */ (function () {
      *
      * @param players
      */
-    StageManage.prototype.ToResult = function (players, flag) {
+    StageManage.prototype.ToResult = function (players, obj, flag) {
         Laya.stage.removeChildren();
-        var res = new Result(players, flag);
+        var res = new Result(players, obj, flag);
         Laya.stage.addChild(res);
     };
     StageManage._instance = null;
@@ -70508,7 +70694,7 @@ var GameData = /** @class */ (function () {
     function GameData() {
     }
     GameData.myUser = new GUser();
-    GameData.battleBgimgUrl = "http://193.112.47.13/icon/laya/battle.png";
+    GameData.battleBgimgUrl = "http://www.villeboss.com/icon/laya/battle.png";
     GameData.maxPlayerNum = 3; //
     GameData.mode = 0; //房间模式，由cp自己定义
     GameData.canWatch = 0; //
@@ -70546,6 +70732,7 @@ var Player = /** @class */ (function (_super) {
         _this.tableID = 0;
         _this.isOwner = false;
         _this.score = 0;
+        _this.roomID = "";
         return _this;
     }
     return Player;
@@ -70574,7 +70761,7 @@ var ui;
             _super.prototype.createChildren.call(this);
             this.createView(ui.BattleUI.uiView);
         };
-        BattleUI.uiView = { "type": "View", "props": { "width": 1136, "height": 640 }, "child": [{ "type": "Rect", "props": { "y": 0, "x": 0, "width": 1136, "lineWidth": 1, "height": 640, "fillColor": "#41b5f6" } }, { "type": "Image", "props": { "y": 0, "x": 0, "width": 1136, "var": "img_battle", "height": 640 } }, { "type": "Sprite", "props": { "y": 500, "x": 540, "width": 45, "var": "Sprite_player3", "pivotY": 37, "pivotX": 22, "name": "Sprite_player3", "height": 72 } }, { "type": "Sprite", "props": { "y": 500, "x": 578, "width": 45, "var": "Sprite_player2", "pivotY": 37, "pivotX": 22, "name": "Sprite_player2", "height": 72 } }, { "type": "Sprite", "props": { "y": 500, "x": 615, "width": 45, "var": "Sprite_player1", "pivotY": 37, "pivotX": 22, "name": "Sprite_player1", "height": 72 } }, { "type": "Label", "props": { "y": 460, "x": 572, "width": 60, "var": "name_player2", "pivotY": 8, "pivotX": 30, "name": "name_player2", "height": 18, "color": "#e3ec19", "align": "center" } }, { "type": "Label", "props": { "y": 460, "x": 616, "width": 60, "var": "name_player1", "pivotY": 8, "pivotX": 30, "name": "name_player1", "height": 18, "color": "#e3ec19", "align": "center" } }, { "type": "Label", "props": { "y": 460, "x": 534, "width": 60, "var": "name_player3", "pivotY": 8, "pivotX": 30, "name": "name_player3", "height": 16, "color": "#e3ec19", "align": "center" } }, { "type": "Image", "props": { "y": 510, "x": 858, "width": 40, "var": "img_ball", "skin": "mvs/boll.png", "scaleY": 0.7, "scaleX": 0.7, "pivotY": 20, "pivotX": 20, "height": 42 } }, { "type": "Button", "props": { "y": 100, "x": 1, "width": 450, "var": "btn_leftMove", "stateNum": 1, "name": "btn_leftMove", "height": 470 } }, { "type": "Button", "props": { "y": 100, "x": 684, "width": 450, "var": "btn_rightMove", "stateNum": 1, "name": "btn_rightMove", "height": 470 } }, { "type": "Label", "props": { "y": 12, "x": 522, "width": 58, "var": "txt_gameTime", "text": "60", "height": 29, "fontSize": 30, "color": "#f6d285", "align": "center" } }, { "type": "Image", "props": { "y": 9, "x": 33, "width": 407, "skin": "mvs/itembg.png", "scaleY": 0.6, "scaleX": 0.6, "height": 43 } }, { "type": "Image", "props": { "y": 11, "x": 854, "width": 407, "skin": "mvs/itembg.png", "scaleY": 0.6, "scaleX": 0.6, "height": 43 } }, { "type": "Image", "props": { "y": 52, "x": 854, "width": 407, "skin": "mvs/itembg.png", "scaleY": 0.6, "scaleX": 0.6, "height": 43 } }, { "type": "Label", "props": { "y": 14, "x": 933, "wordWrap": true, "width": 150, "var": "name_Player2", "text": "用户昵称", "height": 21, "fontSize": 14, "color": "#ffffff", "align": "right" } }, { "type": "Label", "props": { "y": 53, "x": 933, "wordWrap": true, "width": 150, "var": "name_Player3", "text": "用户昵称", "promptColor": "#816e6e", "height": 18, "fontSize": 14, "color": "#ffffff", "align": "right" } }, { "type": "Image", "props": { "y": -4, "x": -2, "width": 44, "var": "img_header1", "skin": "http://193.112.47.13/headimg/1.jpg", "sizeGrid": "0,0,0,0", "scaleY": 1, "scaleX": 1, "pivotX": -1, "height": 48 }, "child": [{ "type": "Sprite", "props": { "y": 39, "x": 36, "width": 33, "renderType": "mask", "pivotY": 23, "pivotX": 26, "height": 27 }, "child": [{ "type": "Circle", "props": { "y": 8, "x": 13, "radius": 18, "lineWidth": 1, "fillColor": "#ff0000" } }] }] }, { "type": "Label", "props": { "y": 14, "x": 46, "wordWrap": true, "width": 150, "var": "name_Player1", "text": "用户昵称", "height": 21, "fontSize": 14, "color": "#171616", "bold": false, "align": "left" } }, { "type": "Image", "props": { "y": 1, "x": 1085, "width": 45, "var": "img_header2", "skin": "http://193.112.47.13/headimg/2.jpg", "sizeGrid": "0,0,0,0", "scaleY": 1, "scaleX": 1, "pivotX": -1, "height": 45 }, "child": [{ "type": "Sprite", "props": { "y": 26, "x": 23, "width": 52, "renderType": "mask", "pivotY": 23, "pivotX": 26, "height": 47 }, "child": [{ "type": "Circle", "props": { "y": 21, "x": 26, "radius": 18, "lineWidth": 1, "fillColor": "#ff0000" } }] }] }, { "type": "Image", "props": { "y": 40, "x": 1085, "width": 45, "var": "img_header3", "skin": "http://193.112.47.13/headimg/3.jpg", "sizeGrid": "0,0,0,0", "scaleY": 1, "scaleX": 1, "pivotX": -1, "height": 47 }, "child": [{ "type": "Sprite", "props": { "y": 26, "x": 22, "width": 52, "renderType": "mask", "pivotY": 23, "pivotX": 26, "height": 47 }, "child": [{ "type": "Circle", "props": { "y": 21, "x": 26, "radius": 18, "lineWidth": 1, "fillColor": "#ff0000" } }] }] }, { "type": "Label", "props": { "y": 15, "x": 200, "wordWrap": true, "width": 70, "var": "score_Player1", "type": "number", "text": "0", "height": 17, "fontSize": 14, "color": "#060606", "bold": false, "align": "left" } }, { "type": "Label", "props": { "y": 16, "x": 859, "wordWrap": true, "width": 70, "var": "score_Player2", "type": "number", "text": "0", "promptColor": "#998585", "height": 18, "fontSize": 14, "color": "#ffffff", "bold": false, "align": "right" } }, { "type": "Label", "props": { "y": 54, "x": 860, "wordWrap": true, "width": 70, "var": "score_Player3", "type": "number", "text": "0", "height": 17, "fontSize": 14, "color": "#ffffff", "bold": false, "align": "right" } }, { "type": "Button", "props": { "y": 588, "x": 1073, "width": 60, "var": "btn_exit", "stateNum": 1, "skin": "mvs/exit.png", "height": 48 } }] };
+        BattleUI.uiView = { "type": "View", "props": { "width": 1280, "height": 720 }, "child": [{ "type": "Image", "props": { "y": 0, "x": 0, "width": 1280, "var": "img_battle", "height": 720 } }, { "type": "Sprite", "props": { "y": 547, "x": 527, "width": 45, "var": "Sprite_player3", "pivotY": 37, "pivotX": 22, "name": "Sprite_player3", "height": 72 } }, { "type": "Sprite", "props": { "y": 547, "x": 565, "width": 45, "var": "Sprite_player2", "pivotY": 37, "pivotX": 22, "name": "Sprite_player2", "height": 72 } }, { "type": "Sprite", "props": { "y": 547, "x": 602, "width": 45, "var": "Sprite_player1", "pivotY": 37, "pivotX": 22, "name": "Sprite_player1", "height": 72 } }, { "type": "Label", "props": { "y": 507, "x": 559, "width": 60, "var": "name_player2", "pivotY": 8, "pivotX": 30, "name": "name_player2", "height": 18, "color": "#e3ec19", "align": "center" } }, { "type": "Label", "props": { "y": 507, "x": 603, "width": 60, "var": "name_player1", "pivotY": 8, "pivotX": 30, "name": "name_player1", "height": 18, "color": "#e3ec19", "align": "center" } }, { "type": "Label", "props": { "y": 507, "x": 521, "width": 60, "var": "name_player3", "pivotY": 8, "pivotX": 30, "name": "name_player3", "height": 16, "color": "#e3ec19", "align": "center" } }, { "type": "Image", "props": { "y": 557, "x": 845, "width": 40, "var": "img_ball", "skin": "mvs/boll.png", "scaleY": 0.7, "scaleX": 0.7, "pivotY": 20, "pivotX": 20, "height": 42 } }, { "type": "Button", "props": { "y": 96, "x": 1, "width": 612, "var": "btn_leftMove", "stateNum": 1, "name": "btn_leftMove", "height": 563 } }, { "type": "Button", "props": { "y": 96, "x": 666, "width": 612, "var": "btn_rightMove", "stateNum": 1, "name": "btn_rightMove", "height": 560 } }, { "type": "Label", "props": { "y": 9, "x": 611, "width": 58, "var": "txt_gameTime", "text": "60", "height": 29, "fontSize": 30, "color": "#f6d285", "align": "center" } }, { "type": "Image", "props": { "y": 9, "x": 33, "width": 407, "skin": "mvs/inputBox.png", "scaleY": 0.6, "scaleX": 0.6, "height": 43 } }, { "type": "Image", "props": { "y": 11, "x": 1000, "width": 407, "skin": "mvs/inputBox.png", "scaleY": 0.6, "scaleX": 0.6, "height": 43 } }, { "type": "Image", "props": { "y": 52, "x": 1000, "width": 407, "skin": "mvs/inputBox.png", "scaleY": 0.6, "scaleX": 0.6, "height": 43 } }, { "type": "Label", "props": { "y": 14, "x": 1079, "wordWrap": true, "width": 150, "var": "name_Player2", "text": "用户昵称", "height": 21, "fontSize": 14, "color": "#060606", "align": "right" } }, { "type": "Label", "props": { "y": 53, "x": 1079, "wordWrap": true, "width": 150, "var": "name_Player3", "text": "用户昵称", "promptColor": "#816e6e", "height": 18, "fontSize": 14, "color": "#000000", "align": "right" } }, { "type": "Image", "props": { "y": -3, "x": -2, "width": 44, "var": "img_header1", "skin": "http://193.112.47.13/headimg/1.jpg", "sizeGrid": "0,0,0,0", "scaleY": 1, "scaleX": 1, "pivotX": -1, "height": 48 }, "child": [{ "type": "Sprite", "props": { "y": 39, "x": 36, "width": 33, "renderType": "mask", "pivotY": 23, "pivotX": 26, "height": 27 }, "child": [{ "type": "Circle", "props": { "y": 8, "x": 13, "radius": 18, "lineWidth": 1, "fillColor": "#ff0000" } }] }] }, { "type": "Label", "props": { "y": 14, "x": 46, "wordWrap": true, "width": 150, "var": "name_Player1", "text": "用户昵称", "height": 21, "fontSize": 14, "color": "#171616", "bold": false, "align": "left" } }, { "type": "Image", "props": { "y": 1, "x": 1231, "width": 45, "var": "img_header2", "skin": "http://193.112.47.13/headimg/2.jpg", "sizeGrid": "0,0,0,0", "scaleY": 1, "scaleX": 1, "pivotX": -1, "height": 45 }, "child": [{ "type": "Sprite", "props": { "y": 26, "x": 23, "width": 52, "renderType": "mask", "pivotY": 23, "pivotX": 26, "height": 47 }, "child": [{ "type": "Circle", "props": { "y": 21, "x": 26, "radius": 18, "lineWidth": 1, "fillColor": "#ff0000" } }] }] }, { "type": "Image", "props": { "y": 40, "x": 1231, "width": 45, "var": "img_header3", "skin": "http://193.112.47.13/headimg/3.jpg", "sizeGrid": "0,0,0,0", "scaleY": 1, "scaleX": 1, "pivotX": -1, "height": 47 }, "child": [{ "type": "Sprite", "props": { "y": 26, "x": 22, "width": 52, "renderType": "mask", "pivotY": 23, "pivotX": 26, "height": 47 }, "child": [{ "type": "Circle", "props": { "y": 21, "x": 26, "radius": 18, "lineWidth": 1, "fillColor": "#ff0000" } }] }] }, { "type": "Label", "props": { "y": 15, "x": 200, "wordWrap": true, "width": 70, "var": "score_Player1", "type": "number", "text": "0", "height": 17, "fontSize": 14, "color": "#060606", "bold": false, "align": "left" } }, { "type": "Label", "props": { "y": 16, "x": 1005, "wordWrap": true, "width": 70, "var": "score_Player2", "type": "number", "text": "0", "promptColor": "#998585", "height": 18, "fontSize": 14, "color": "#000000", "bold": false, "align": "right" } }, { "type": "Label", "props": { "y": 54, "x": 1006, "wordWrap": true, "width": 70, "var": "score_Player3", "type": "number", "text": "0", "height": 17, "fontSize": 14, "color": "#000000", "bold": false, "align": "right" } }, { "type": "Button", "props": { "y": 658, "x": 1138, "width": 140, "var": "btn_exit", "stateNum": 1, "skin": "mvs/btn1.png", "labelSize": 24, "labelColors": "#FFFFFF", "label": "离开", "height": 60 } }] };
         return BattleUI;
     }(View));
     ui.BattleUI = BattleUI;
@@ -70589,7 +70776,7 @@ var ui;
             _super.prototype.createChildren.call(this);
             this.createView(ui.LobbyUI.uiView);
         };
-        LobbyUI.uiView = { "type": "View", "props": { "width": 1136, "height": 640, "alpha": 1 }, "child": [{ "type": "Rect", "props": { "y": 0, "x": 0, "width": 1136, "lineWidth": 1, "height": 640, "fillColor": "#507278" } }, { "type": "Image", "props": { "y": 0, "x": 0, "width": 1136, "visible": true, "skin": "mvs/bkg.png", "height": 640, "alpha": 1 } }, { "type": "Button", "props": { "y": 179, "width": 200, "var": "btn_randMatch", "stateNum": 1, "skin": "mvs/btnbg.png", "sizeGrid": "5,5,5,5", "name": "btn_randMatch", "labelStrokeColor": "#c0d4d1", "labelStroke": 2, "labelSize": 28, "labelBold": true, "label": "随机匹配", "height": 200, "centerX": -335, "alpha": 1 } }, { "type": "Button", "props": { "y": 283, "width": 200, "var": "btn_joinWithProperty", "stateNum": 1, "skin": "mvs/btnbg.png", "sizeGrid": "5,5,5,5", "labelStrokeColor": "#c0d4d1", "labelStroke": 2, "labelSize": 28, "labelBold": true, "label": "属性匹配", "height": 200, "centerX": -132, "alpha": 1 } }, { "type": "Button", "props": { "y": 184, "width": 200, "var": "btn_createRoom", "stateNum": 1, "skin": "mvs/btnbg.png", "sizeGrid": "5,5,5,5", "labelStrokeColor": "#c0d4d1", "labelStroke": 2, "labelSize": 28, "labelBold": true, "label": "创建房间", "height": 200, "centerX": 81, "alpha": 1 } }, { "type": "Button", "props": { "y": 275, "width": 200, "var": "btn_geRoomList", "stateNum": 1, "skin": "mvs/btnbg.png", "sizeGrid": "5,5,5,5", "name": "btn_geRoomList", "labelStrokeColor": "#c0d4d1", "labelStroke": 2, "labelSize": 28, "labelBold": true, "label": "房间列表", "height": 200, "centerX": 286 } }, { "type": "Image", "props": { "y": 574, "x": 60, "width": 298, "skin": "mvs/itembg.png", "height": 51 } }, { "type": "Image", "props": { "y": 556, "x": -3, "width": 85, "var": "img_header", "skin": "http://193.112.47.13/headimg/1.jpg", "sizeGrid": "0,0,0,0", "pivotX": -1, "height": 90 }, "child": [{ "type": "Sprite", "props": { "y": 23, "x": 19, "width": 77, "renderType": "mask", "pivotY": 23, "pivotX": 26, "height": 85 }, "child": [{ "type": "Circle", "props": { "y": 42, "x": 47, "radius": 40, "lineWidth": 1, "fillColor": "#ff0000" } }] }] }, { "type": "Label", "props": { "y": 589, "x": 83, "wordWrap": true, "width": 255, "var": "name_head", "text": "用户昵称", "height": 24, "fontSize": 18, "color": "#000000", "align": "left" } }, { "type": "Button", "props": { "y": 582, "x": 1067, "var": "btn_exit", "stateNum": 1, "skin": "mvs/exit.png" } }, { "type": "Label", "props": { "y": 50, "x": 379, "width": 400, "text": "游戏大厅", "height": 70, "fontSize": 44, "font": "Microsoft YaHei", "color": "#0b0b0b", "bold": true, "align": "center" } }] };
+        LobbyUI.uiView = { "type": "View", "props": { "width": 1280, "height": 720, "alpha": 1 }, "child": [{ "type": "Image", "props": { "y": 0, "x": 0, "width": 1280, "visible": true, "skin": "mvs/bg.jpg", "sizeGrid": "0,0,0,0,1", "height": 720, "alpha": 1 } }, { "type": "Button", "props": { "y": 205, "x": 309, "width": 192, "var": "btn_randMatch", "name": "btn_randMatch", "labelSize": 48, "labelColors": "#FFFFFF", "label": "随机匹配", "height": 67, "alpha": 1 } }, { "type": "Button", "props": { "y": 330, "x": 309, "width": 196, "var": "btn_joinWithProperty", "sizeGrid": "5,5,5,5", "labelStroke": 0, "labelSize": 28, "labelColors": "#ffffff", "labelBold": false, "label": "自定义属性匹配", "height": 40, "alpha": 1 } }, { "type": "Button", "props": { "y": 205, "x": 812, "width": 196, "var": "btn_createRoom", "sizeGrid": "5,5,5,5", "labelStroke": 0, "labelSize": 48, "labelColors": "#ffffff", "label": "创建房间", "height": 67, "alpha": 1 } }, { "type": "Button", "props": { "y": 330, "x": 812, "width": 196, "var": "btn_geRoomList", "sizeGrid": "5,5,5,5", "name": "btn_geRoomList", "labelStrokeColor": "#c0d4d1", "labelStroke": 0, "labelSize": 28, "labelColors": "#ffffff", "label": "查看房间列表", "height": 40 } }, { "type": "Image", "props": { "y": 29, "x": 941, "width": 85, "var": "img_header", "skin": "http://193.112.47.13/headimg/1.jpg", "sizeGrid": "0,0,0,0", "pivotX": -1, "height": 90 }, "child": [{ "type": "Sprite", "props": { "y": 23, "x": 19, "width": 77, "renderType": "mask", "pivotY": 23, "pivotX": 26, "height": 85 }, "child": [{ "type": "Circle", "props": { "y": 42, "x": 47, "radius": 40, "lineWidth": 1, "fillColor": "#ff0000" } }] }] }, { "type": "Label", "props": { "y": 63, "x": 1028, "wordWrap": true, "width": 227, "var": "name_head", "text": "用户昵称", "height": 24, "fontSize": 18, "color": "#999999", "align": "left" } }, { "type": "Button", "props": { "y": 63, "x": 61, "width": 36, "var": "btn_exit", "stateNum": 1, "skin": "mvs/icon_back.png", "height": 36 } }, { "type": "Label", "props": { "y": 56, "x": 120, "width": 177, "text": "游戏大厅", "height": 49, "fontSize": 36, "font": "Microsoft YaHei", "color": "#ffffff", "bold": false, "align": "left" } }, { "type": "Image", "props": { "y": 219, "x": 250, "width": 30, "skin": "mvs/icon_arrow_left.png", "height": 40 } }, { "type": "Image", "props": { "y": 219, "x": 756, "width": 30, "skin": "mvs/icon_arrow_left.png", "height": 40 } }] };
         return LobbyUI;
     }(View));
     ui.LobbyUI = LobbyUI;
@@ -70604,7 +70791,7 @@ var ui;
             _super.prototype.createChildren.call(this);
             this.createView(ui.LoginUI.uiView);
         };
-        LoginUI.uiView = { "type": "View", "props": { "width": 1136, "height": 640, "alpha": 1 }, "child": [{ "type": "Rect", "props": { "y": 0, "x": 0, "width": 1136, "lineWidth": 1, "height": 640, "fillColor": "#0f444e" } }, { "type": "Image", "props": { "y": 0, "x": 0, "width": 1136, "skin": "mvs/bkg.png", "height": 640 } }, { "type": "TextInput", "props": { "y": 141, "x": 308, "wordWrap": true, "width": 522, "var": "txtGameID", "skin": "mvs/inputBox.png", "sizeGrid": "2,2,2,2", "rotation": 0, "restrict": "0-9", "prompt": "请输入GameID", "padding": "0", "name": "txtGameID", "height": 54, "fontSize": 20, "align": "left" } }, { "type": "TextInput", "props": { "y": 200, "x": 308, "wordWrap": true, "width": 522, "var": "txtAppkey", "skin": "mvs/inputBox.png", "sizeGrid": "2,2,2,2", "rotation": 0, "restrict": "a-zA-Z", "prompt": "请输入AppKey", "padding": "0", "name": "txtAppkey", "height": 54, "fontSize": 20, "align": "left" } }, { "type": "TextInput", "props": { "y": 258, "x": 308, "wordWrap": true, "width": 522, "var": "txtSecretKey", "skin": "mvs/inputBox.png", "sizeGrid": "2,2,2,2", "rotation": 0, "restrict": "a-zA-Z", "prompt": "请输入SecretKay", "padding": "0", "name": "txtSecretKey", "height": 54, "fontSize": 20, "color": "#000000", "align": "left" } }, { "type": "Image", "props": { "y": 575, "x": 433, "skin": "mvs/footer_text.png" } }, { "type": "Button", "props": { "y": 374, "width": 222, "var": "btn_ok", "stateNum": 1, "skin": "mvs/btn1.png", "sizeGrid": "5,5,5,5", "name": "btn_ok", "labelSize": 28, "labelBold": true, "label": "确定", "height": 80, "centerX": 0 } }, { "type": "Label", "props": { "y": 40, "x": 369, "width": 400, "text": "Matchvs-Demo", "height": 70, "fontSize": 44, "font": "Microsoft YaHei", "color": "#0b0b0b", "bold": true, "align": "center" } }, { "type": "RadioGroup", "props": { "y": 336, "x": 465, "var": "radio_sel", "selectedIndex": 0 }, "child": [{ "type": "Radio", "props": { "y": 0, "x": 4, "width": 110, "skin": "mvs/radio3.png", "name": "item1", "labelSize": 22, "labelColors": "#010101", "labelBold": true, "label": "release", "height": 32 } }, { "type": "Radio", "props": { "y": 0, "x": 116, "width": 97, "skin": "mvs/radio3.png", "selected": true, "name": "item0", "labelSize": 22, "labelColors": "#010101", "labelBold": true, "label": "alpha", "height": 30 } }] }, { "type": "Button", "props": { "y": 493, "x": 553, "width": 30, "var": "btn_clear", "stateNum": 1, "skin": "mvs/clear.png", "name": "btn_clear", "height": 30 } }] };
+        LoginUI.uiView = { "type": "View", "props": { "width": 1280, "height": 720, "alpha": 1 }, "child": [{ "type": "Image", "props": { "y": 0, "x": 0, "width": 1280, "skin": "mvs/bg.jpg", "sizeGrid": "0,0,0,0,1", "rotation": 0, "height": 720 } }, { "type": "TextInput", "props": { "y": 344, "x": 370, "wordWrap": true, "width": 540, "var": "txtSecretKey", "skin": "mvs/inputBox.png", "sizeGrid": "2,2,2,2", "rotation": 0, "restrict": "a-zA-Z", "prompt": "请输入SecretKay", "padding": "0", "name": "txtSecretKey", "height": 70, "fontSize": 20, "color": "#000000", "align": "left" } }, { "type": "TextInput", "props": { "y": 250, "x": 370, "wordWrap": true, "width": 540, "var": "txtAppkey", "skin": "mvs/inputBox.png", "sizeGrid": "2,2,2,2", "rotation": 0, "restrict": "a-zA-Z", "prompt": "请输入AppKey", "padding": "0", "name": "txtAppkey", "height": 70, "fontSize": 20, "align": "left" } }, { "type": "TextInput", "props": { "y": 156, "x": 370, "wordWrap": true, "width": 540, "var": "txtGameID", "skin": "mvs/inputBox.png", "sizeGrid": "2,2,2,2", "rotation": 0, "restrict": "0-9", "prompt": "请输入GameID", "padding": "0", "name": "txtGameID", "height": 70, "fontSize": 20, "align": "left" } }, { "type": "Button", "props": { "y": 442, "x": 370, "width": 315, "var": "btn_ok", "stateNum": 1, "skin": "mvs/btn1.png", "sizeGrid": "15,15,15,15", "name": "btn_ok", "labelSize": 28, "labelColors": "#ffffff", "labelBold": false, "label": "确定", "height": 70 } }, { "type": "Button", "props": { "y": 442, "x": 710, "width": 200, "var": "btn_clear", "stateNum": 1, "skin": "mvs/clear.png", "name": "btn_clear", "labelSize": 28, "labelColors": "#00C1E0", "labelAlign": "center", "label": "清理缓存", "height": 70 } }, { "type": "Label", "props": { "y": 606, "x": 249, "width": 778, "valign": "middle", "text": "提示：此Demo需要分别在三个不同的浏览器（如Chrome、火狐、360）里打开进行体验", "height": 28, "fontSize": 20, "color": "#999999", "align": "center" } }, { "type": "Label", "props": { "y": 644, "x": 309, "width": 497, "valign": "middle", "text": "如需在一个浏览器里完成体验，则每次需要先“清楚缓存”", "height": 28, "fontSize": 20, "color": "#999999" } }, { "type": "Button", "props": { "y": 667, "x": 1161, "width": 118, "var": "btn_premise", "name": "btn_premise", "labelSize": 28, "labelColors": "#00C1E0", "label": "独立部署", "height": 46 } }, { "type": "Label", "props": { "y": 51, "x": 423, "width": 431, "text": "MatchvsDemo-Laya", "height": 51, "fontSize": 42, "font": "Microsoft YaHei", "color": "#ffffff", "bold": false, "align": "center" } }, { "type": "Button", "props": { "y": 536, "x": 540, "width": 200, "visible": true, "var": "clearNote", "stateNum": 1, "skin": "mvs/clearNote.png", "name": "clearNote", "labelSize": 20, "labelColors": "#FFFFFF", "label": "缓存清理成功", "height": 44, "alpha": 0 } }] };
         return LoginUI;
     }(View));
     ui.LoginUI = LoginUI;
@@ -70619,7 +70806,7 @@ var ui;
             _super.prototype.createChildren.call(this);
             this.createView(ui.MatchUI.uiView);
         };
-        MatchUI.uiView = { "type": "View", "props": { "width": 1136, "visible": true, "height": 640, "alpha": 1 }, "child": [{ "type": "Rect", "props": { "y": 0, "x": 0, "width": 1136, "lineWidth": 1, "height": 640, "fillColor": "#86c074" } }, { "type": "Image", "props": { "y": 0, "x": 0, "width": 1136, "skin": "mvs/bkg.png", "height": 640 } }, { "type": "Label", "props": { "y": 71, "width": 503, "var": "match_title", "text": "随机匹配中...", "stroke": 1, "height": 37, "fontSize": 28, "font": "Microsoft YaHei", "color": "#000000", "centerX": -1, "bold": false, "align": "center" } }, { "type": "Button", "props": { "y": 525, "width": 144, "var": "btn_cancel", "stateNum": 1, "skin": "mvs/btn1.png", "name": "btn_cancel", "labelSize": 28, "labelFont": "SimHei", "labelBold": true, "label": "取消", "height": 62, "centerX": 0 } }, { "type": "Sprite", "props": { "y": 476, "x": 566, "width": 40, "pivotY": 20, "pivotX": 20, "height": 40 }, "child": [{ "type": "Image", "props": { "y": 20, "x": 20, "width": 40, "var": "loadMatch", "skin": "mvs/loading.png", "pivotY": 20, "pivotX": 20, "height": 40 } }] }, { "type": "Image", "props": { "y": 171, "x": 262, "visible": false, "var": "img_OwnerFlag1", "skin": "mvs/home.png", "name": "img_OwnerFlag1" } }, { "type": "Image", "props": { "y": 171, "x": 262, "visible": false, "var": "img_OwnerFlag2", "skin": "mvs/home.png", "name": "img_OwnerFlag2" } }, { "type": "Image", "props": { "y": 171, "x": 262, "visible": false, "var": "img_OwnerFlag3", "skin": "mvs/home.png", "name": "img_OwnerFlag3" } }, { "type": "CheckBox", "props": { "y": 198, "x": 843, "width": 117, "visible": false, "var": "chk_FrameSysc", "skin": "mvs/select.png", "name": "chk_FrameSysc", "labelSize": 28, "labelFont": "Arial", "labelColors": "#080808", "labelBold": true, "label": "打开帧同步", "height": 35 } }, { "type": "Panel", "props": { "y": 152, "x": 329, "width": 504, "height": 273 }, "child": [{ "type": "Image", "props": { "y": 12, "width": 500, "visible": true, "skin": "mvs/itembg.png", "height": 80 } }, { "type": "Image", "props": { "x": 1, "width": 100, "var": "img_Player1", "skin": "http://193.112.47.13/headimg/1.jpg", "sizeGrid": "0,0,0,0", "pivotX": -1, "name": "img_Player1", "height": 100 }, "child": [{ "type": "Sprite", "props": { "y": 57, "x": 56, "width": 92, "renderType": "mask", "pivotY": 40, "pivotX": 52, "height": 84 }, "child": [{ "type": "Circle", "props": { "y": 35, "x": 43, "radius": 40, "lineWidth": 1, "fillColor": "#ff0000" } }] }] }, { "type": "Image", "props": { "y": 100, "width": 500, "visible": true, "skin": "mvs/itembg.png", "height": 80 } }, { "type": "Image", "props": { "y": 88, "x": 4, "width": 100, "var": "img_Player2", "skin": "http://193.112.47.13/headimg/1.jpg", "sizeGrid": "0,0,0,0", "pivotX": -1, "name": "img_Player2", "height": 100 }, "child": [{ "type": "Sprite", "props": { "y": 49, "x": 58, "width": 92, "renderType": "mask", "pivotY": 40, "pivotX": 52, "height": 84 }, "child": [{ "type": "Circle", "props": { "y": 43, "x": 42, "radius": 40, "lineWidth": 1, "fillColor": "#ff0000" } }] }] }, { "type": "Image", "props": { "y": 188, "width": 500, "visible": true, "skin": "mvs/itembg.png", "height": 80 } }, { "type": "Image", "props": { "y": 175, "x": 5, "width": 104, "var": "img_Player3", "skin": "http://193.112.47.13/headimg/1.jpg", "sizeGrid": "0,0,0,0", "pivotX": -1, "name": "img_Player3", "height": 97 }, "child": [{ "type": "Sprite", "props": { "y": 57, "x": 53, "width": 92, "renderType": "mask", "pivotY": 40, "pivotX": 52, "height": 84 }, "child": [{ "type": "Circle", "props": { "y": 36, "x": 46, "radius": 40, "lineWidth": 1, "fillColor": "#ff0000" } }] }] }, { "type": "Label", "props": { "y": 40, "x": 111, "width": 259, "var": "name_Player1", "text": "用户1", "height": 27, "fontSize": 18, "color": "#060606", "align": "center" } }, { "type": "Label", "props": { "y": 129, "x": 111, "width": 258, "var": "name_Player2", "text": "用户2", "height": 25, "fontSize": 18, "color": "#010101", "align": "center" } }, { "type": "Label", "props": { "y": 214, "x": 111, "width": 256, "var": "name_Player3", "text": "用户3", "height": 26, "fontSize": 18, "color": "#0b0b0b", "align": "center" } }, { "type": "Button", "props": { "y": 55, "x": 436, "width": 100, "visible": false, "var": "btn_kick1", "stateNum": 1, "skin": "mvs/btn7.png", "pivotY": 20, "pivotX": 50, "name": "btn_kick1", "labelSize": 22, "labelColors": "#090a09", "labelBold": true, "label": "踢掉", "height": 40 } }, { "type": "Button", "props": { "y": 143, "x": 438, "width": 100, "visible": false, "var": "btn_kick2", "stateNum": 1, "skin": "mvs/btn7.png", "pivotY": 20, "pivotX": 50, "name": "btn_kick2", "labelSize": 22, "labelColors": "#090a09", "labelBold": true, "label": "踢掉", "height": 40 } }, { "type": "Button", "props": { "y": 228, "x": 440, "width": 100, "visible": false, "var": "btn_kick3", "stateNum": 1, "skin": "mvs/btn7.png", "pivotY": 20, "pivotX": 50, "name": "btn_kick3", "labelSize": 22, "labelColors": "#090a09", "labelBold": true, "label": "踢掉", "height": 40 } }] }] };
+        MatchUI.uiView = { "type": "View", "props": { "width": 1280, "visible": true, "height": 720, "alpha": 1 }, "child": [{ "type": "Image", "props": { "y": 0, "x": 0, "width": 1280, "skin": "mvs/bg.jpg", "sizeGrid": "0,0,0,0,1", "height": 720 } }, { "type": "Label", "props": { "y": 125, "x": 120, "width": 397, "var": "match_title", "text": "00000", "stroke": 1, "height": 35, "fontSize": 24, "font": "Microsoft YaHei", "color": "#ffffff", "bold": false, "align": "left" } }, { "type": "Button", "props": { "y": 63, "x": 61, "width": 36, "var": "btn_cancel", "stateNum": 1, "skin": "mvs/icon_back.png", "name": "btn_cancel", "labelSize": 28, "labelFont": "SimHei", "labelBold": true, "height": 36 } }, { "type": "Sprite", "props": { "y": 591, "x": 627, "width": 40, "pivotY": 20, "pivotX": 20, "height": 40 }, "child": [{ "type": "Image", "props": { "y": 20, "x": 20, "width": 40, "var": "loadMatch", "skin": "mvs/loading.png", "pivotY": 20, "pivotX": 20, "height": 40 } }] }, { "type": "Image", "props": { "y": 246, "x": 277, "visible": false, "var": "img_OwnerFlag1", "skin": "mvs/home.png", "name": "img_OwnerFlag1" } }, { "type": "Image", "props": { "y": 246, "x": 277, "visible": false, "var": "img_OwnerFlag2", "skin": "mvs/home.png", "name": "img_OwnerFlag2" } }, { "type": "Image", "props": { "y": 246, "x": 277, "visible": false, "var": "img_OwnerFlag3", "skin": "mvs/home.png", "name": "img_OwnerFlag3" } }, { "type": "CheckBox", "props": { "y": 252, "x": 949, "width": 182, "visible": false, "var": "chk_FrameSysc", "skin": "mvs/radio4.png", "name": "chk_FrameSysc", "labelSize": 28, "labelFont": "Arial", "labelColors": "#ffffff", "labelBold": true, "label": "打开帧同步", "height": 35 } }, { "type": "Panel", "props": { "y": 223, "x": 388, "width": 540, "height": 321 }, "child": [{ "type": "Image", "props": { "y": -1, "x": 0, "width": 540, "visible": true, "skin": "mvs/inputBox.png", "height": 90 } }, { "type": "Image", "props": { "y": 0, "x": 1, "width": 98, "var": "img_Player1", "skin": "http://193.112.47.13/headimg/1.jpg", "sizeGrid": "0,0,0,0", "pivotX": -1, "name": "img_Player1", "height": 89 }, "child": [{ "type": "Sprite", "props": { "y": 0, "x": 0, "width": 92, "renderType": "mask", "height": 87 }, "child": [{ "type": "Circle", "props": { "y": 46, "x": 46, "radius": 40, "lineWidth": 1, "fillColor": "#ff0000" } }] }] }, { "type": "Image", "props": { "y": 110, "x": 0, "width": 540, "visible": true, "skin": "mvs/inputBox.png", "height": 90 } }, { "type": "Image", "props": { "y": 107, "x": 4, "width": 94, "var": "img_Player2", "skin": "http://193.112.47.13/headimg/1.jpg", "sizeGrid": "0,0,0,0", "pivotX": -1, "name": "img_Player2", "height": 92 }, "child": [{ "type": "Sprite", "props": { "y": 0, "x": 0, "width": 91, "renderType": "mask", "height": 88 }, "child": [{ "type": "Circle", "props": { "y": 46, "x": 46, "radius": 40, "lineWidth": 1, "fillColor": "#ff0000" } }] }] }, { "type": "Image", "props": { "y": 221, "x": 0, "width": 540, "visible": true, "skin": "mvs/inputBox.png", "height": 90 } }, { "type": "Image", "props": { "y": 222, "x": 5, "width": 95, "var": "img_Player3", "skin": "http://193.112.47.13/headimg/1.jpg", "sizeGrid": "0,0,0,0", "pivotX": -1, "name": "img_Player3", "height": 91 }, "child": [{ "type": "Sprite", "props": { "y": 0, "x": 0, "width": 92, "renderType": "mask", "pivotY": 0, "pivotX": 0, "height": 84 }, "child": [{ "type": "Circle", "props": { "y": 46, "x": 46, "radius": 40, "lineWidth": 1, "fillColor": "#ff0000" } }] }] }, { "type": "Label", "props": { "y": 32, "x": 98, "width": 310, "var": "name_Player1", "text": "用户1", "height": 27, "fontSize": 18, "color": "#060606", "align": "center" } }, { "type": "Label", "props": { "y": 144, "x": 98, "width": 307, "var": "name_Player2", "text": "用户2", "height": 27, "fontSize": 18, "color": "#010101", "align": "center" } }, { "type": "Label", "props": { "y": 256, "x": 98, "width": 307, "var": "name_Player3", "text": "用户3", "height": 26, "fontSize": 18, "color": "#0b0b0b", "align": "center" } }, { "type": "Button", "props": { "y": 43, "x": 469, "width": 100, "visible": false, "var": "btn_kick1", "stateNum": 1, "skin": "mvs/btn1.png", "pivotY": 20, "pivotX": 50, "name": "btn_kick1", "labelSize": 22, "labelColors": "#090a09", "labelBold": true, "label": "踢掉", "height": 50 } }, { "type": "Button", "props": { "y": 149, "x": 469, "width": 100, "visible": false, "var": "btn_kick2", "stateNum": 1, "skin": "mvs/btn1.png", "pivotY": 20, "pivotX": 50, "name": "btn_kick2", "labelSize": 22, "labelColors": "#090a09", "labelBold": true, "label": "踢掉", "height": 50 } }, { "type": "Button", "props": { "y": 261, "x": 469, "width": 100, "visible": false, "var": "btn_kick3", "stateNum": 1, "skin": "mvs/btn1.png", "pivotY": 20, "pivotX": 50, "name": "btn_kick3", "labelSize": 22, "labelColors": "#090a09", "labelBold": true, "label": "踢掉", "height": 50 } }] }, { "type": "Label", "props": { "y": 666, "x": 484, "width": 312, "valign": "middle", "text": "提示：需要满3个玩家才能开始游戏", "height": 28, "fontSize": 20, "color": "#999999", "align": "left" } }, { "type": "Label", "props": { "y": 56, "x": 120, "width": 235, "text": "等待玩家加入", "stroke": 1, "height": 50, "fontSize": 36, "font": "Microsoft YaHei", "color": "#ffffff", "bold": false, "align": "left" } }] };
         return MatchUI;
     }(View));
     ui.MatchUI = MatchUI;
@@ -70634,10 +70821,25 @@ var ui;
             _super.prototype.createChildren.call(this);
             this.createView(ui.MatchProUI.uiView);
         };
-        MatchProUI.uiView = { "type": "View", "props": { "y": 0, "x": 0, "width": 1136, "height": 640 }, "child": [{ "type": "Rect", "props": { "y": 0, "x": 0, "width": 1136, "lineWidth": 1, "height": 640, "fillColor": "#86c074" } }, { "type": "Image", "props": { "y": 0, "x": 0, "width": 1136, "skin": "mvs/bkg.png", "height": 640 } }, { "type": "Image", "props": { "y": 143, "width": 600, "skin": "mvs/note.png", "height": 400, "centerX": 0 } }, { "type": "Button", "props": { "y": 413, "width": 134, "var": "btn_ok", "stateNum": 1, "skin": "mvs/btn1.png", "labelSize": 22, "labelBold": true, "label": "确定", "height": 54, "centerX": 0 } }, { "type": "Label", "props": { "y": 176, "x": 10, "width": 503, "text": "属性匹配", "stroke": 1, "height": 37, "fontSize": 28, "font": "Microsoft YaHei", "color": "#000000", "centerX": 0, "bold": false, "align": "center" } }, { "type": "Button", "props": { "y": 475, "x": 797, "var": "btn_exit", "stateNum": 1, "skin": "mvs/exit.png" } }, { "type": "RadioGroup", "props": { "y": 306, "var": "radio_groupMap", "selectedIndex": 0, "centerX": 0 }, "child": [{ "type": "Radio", "props": { "var": "item0", "skin": "mvs/radio3.png", "name": "item0", "labelSize": 28, "label": "地图A" } }, { "type": "Radio", "props": { "x": 177, "var": "item1", "skin": "mvs/radio3.png", "name": "item1", "labelSize": 28, "label": "地图B" } }] }] };
+        MatchProUI.uiView = { "type": "View", "props": { "y": 0, "x": 0, "width": 1280, "height": 720 }, "child": [{ "type": "Rect", "props": { "y": 0, "x": 0, "width": 1136, "lineWidth": 1, "height": 640, "fillColor": "#86c074" } }, { "type": "Image", "props": { "y": 0, "x": 0, "width": 1280, "skin": "mvs/bg.jpg", "sizeGrid": "0,0,0,0,1", "height": 720 } }, { "type": "Image", "props": { "y": 149, "x": 340, "width": 600, "skin": "mvs/note.png", "height": 400, "centerX": 0 } }, { "type": "Button", "props": { "y": 431, "x": 570, "width": 140, "var": "btn_ok", "stateNum": 1, "skin": "mvs/btn1.png", "labelSize": 22, "labelColors": "#ffffff", "labelBold": true, "label": "确定", "height": 60, "centerX": 0 } }, { "type": "Label", "props": { "y": 182, "x": 389, "width": 503, "text": "属性选择", "height": 37, "fontSize": 28, "font": "Microsoft YaHei", "color": "#000000", "centerX": 0, "bold": false, "align": "center" } }, { "type": "Button", "props": { "y": 63, "x": 61, "var": "btn_exit", "stateNum": 1, "skin": "mvs/icon_back.png" } }, { "type": "RadioGroup", "props": { "y": 312, "x": 499, "var": "radio_groupMap", "selectedIndex": 0, "centerX": -6 }, "child": [{ "type": "Radio", "props": { "var": "item0", "skin": "mvs/radio4.png", "name": "item0", "labelSize": 28, "label": "地图A" } }, { "type": "Radio", "props": { "x": 177, "var": "item1", "skin": "mvs/radio4.png", "name": "item1", "labelSize": 28, "label": "地图B" } }] }, { "type": "Label", "props": { "y": 56, "x": 120, "width": 268, "text": "自定义属性匹配", "stroke": 1, "height": 56, "fontSize": 36, "font": "Microsoft YaHei", "color": "#ffffff", "bold": false, "align": "left" } }] };
         return MatchProUI;
     }(View));
     ui.MatchProUI = MatchProUI;
+})(ui || (ui = {}));
+(function (ui) {
+    var PremiseUI = /** @class */ (function (_super) {
+        __extends(PremiseUI, _super);
+        function PremiseUI() {
+            return _super.call(this) || this;
+        }
+        PremiseUI.prototype.createChildren = function () {
+            _super.prototype.createChildren.call(this);
+            this.createView(ui.PremiseUI.uiView);
+        };
+        PremiseUI.uiView = { "type": "View", "props": { "width": 1280, "height": 720 }, "child": [{ "type": "Image", "props": { "y": 0, "x": 0, "width": 1280, "skin": "mvs/bg.jpg", "sizeGrid": "0,0,0,0,1", "height": 720 } }, { "type": "TextInput", "props": { "y": 342, "x": 391, "wordWrap": true, "width": 522, "var": "txt_secretKey", "skin": "mvs/inputBox.png", "sizeGrid": "2,2,2,2", "rotation": 0, "restrict": "a-zA-Z", "prompt": "请输入secretKey", "padding": "0", "name": "txt_secretKey", "height": 54, "fontSize": 20, "color": "#000000", "align": "left" } }, { "type": "TextInput", "props": { "y": 401, "x": 391, "wordWrap": true, "width": 522, "var": "txt_userID", "skin": "mvs/inputBox.png", "sizeGrid": "2,2,2,2", "rotation": 0, "restrict": "a-zA-Z", "prompt": "请输入userID", "padding": "0", "name": "txt_userID", "height": 54, "fontSize": 20, "color": "#000000", "align": "left" } }, { "type": "TextInput", "props": { "y": 284, "x": 391, "wordWrap": true, "width": 522, "var": "txt_appKey", "skin": "mvs/inputBox.png", "sizeGrid": "2,2,2,2", "rotation": 0, "restrict": "a-zA-Z", "prompt": "请输入appKey", "padding": "0", "name": "txt_appKey", "height": 54, "fontSize": 20, "color": "#000000", "align": "left" } }, { "type": "TextInput", "props": { "y": 225, "x": 391, "wordWrap": true, "width": 522, "var": "txt_gameID", "skin": "mvs/inputBox.png", "sizeGrid": "2,2,2,2", "rotation": 0, "restrict": "a-zA-Z", "prompt": "请输入gameID", "padding": "0", "name": "txt_gameID", "height": 54, "fontSize": 20, "color": "#000000", "align": "left" } }, { "type": "TextInput", "props": { "y": 167, "x": 391, "wordWrap": true, "width": 522, "var": "txt_endPoint", "skin": "mvs/inputBox.png", "sizeGrid": "2,2,2,2", "rotation": 0, "restrict": "a-zA-Z", "prompt": "请输入服务地址", "padding": "0", "name": "txt_endPoint", "height": 54, "fontSize": 20, "color": "#000000", "align": "left" } }, { "type": "TextInput", "props": { "y": 459, "x": 391, "wordWrap": true, "width": 522, "var": "txt_token", "skin": "mvs/inputBox.png", "sizeGrid": "2,2,2,2", "rotation": 0, "restrict": "a-zA-Z", "prompt": "请输入token", "padding": "0", "name": "txt_token", "height": 54, "fontSize": 20, "color": "#000000", "align": "left" } }, { "type": "Button", "props": { "y": 522, "width": 315, "var": "btn_ok", "stateNum": 1, "skin": "mvs/btn1.png", "sizeGrid": "5,5,5,5", "name": "btn_ok", "labelSize": 28, "labelColors": "#ffffff", "labelBold": false, "label": "确定", "height": 70, "centerX": -89 } }, { "type": "Button", "props": { "y": 522, "x": 714, "width": 200, "var": "btn_back", "stateNum": 1, "skin": "mvs/clear.png", "name": "btn_back", "labelSize": 28, "labelColors": "#00C1E0", "label": "返回", "height": 70 } }, { "type": "Label", "props": { "y": 50, "x": 413, "width": 454, "text": "Matchvs服务独立部署", "height": 70, "fontSize": 48, "font": "Microsoft YaHei", "color": "#ffffff", "bold": false, "align": "center" } }] };
+        return PremiseUI;
+    }(View));
+    ui.PremiseUI = PremiseUI;
 })(ui || (ui = {}));
 (function (ui) {
     var ReConnectUI = /** @class */ (function (_super) {
@@ -70649,7 +70851,7 @@ var ui;
             _super.prototype.createChildren.call(this);
             this.createView(ui.ReConnectUI.uiView);
         };
-        ReConnectUI.uiView = { "type": "View", "props": { "y": 0, "x": 0, "width": 1136, "visible": true, "height": 640 }, "child": [{ "type": "Rect", "props": { "y": 0, "x": 0, "width": 1136, "lineWidth": 1, "height": 640, "fillColor": "#ced26c" } }, { "type": "Image", "props": { "y": 0, "x": 0, "width": 1136, "skin": "mvs/bkg.png", "height": 640 } }, { "type": "Button", "props": { "y": 462, "x": 708, "width": 119, "var": "btn_cancel", "stateNum": 1, "skin": "mvs/btn7.png", "pivotX": 61, "name": "btn_cancel", "labelSize": 20, "labelFont": "Microsoft YaHei", "labelColors": "#000000", "labelBold": true, "label": "取消", "height": 39 } }, { "type": "Label", "props": { "width": 492, "var": "txt_message", "text": "检测到您上一局游戏还没结束，是否重连？", "name": "txt_message", "height": 29, "fontSize": 22, "color": "#000000", "centerY": -100, "centerX": 0, "bold": true, "align": "center" } }, { "type": "Button", "props": { "y": 462, "x": 370, "width": 119, "var": "btn_ok", "stateNum": 1, "skin": "mvs/btn7.png", "name": "btn_ok", "labelSize": 20, "labelFont": "Microsoft YaHei", "labelColors": "#000000", "labelBold": true, "label": "确定", "height": 39 } }, { "type": "Sprite", "props": { "y": 333, "x": 568, "width": 40, "visible": false, "var": "img_loading", "pivotY": 20, "pivotX": 20, "name": "img_loading", "height": 40 }, "child": [{ "type": "Image", "props": { "y": 20, "x": 20, "width": 40, "skin": "mvs/loading.png", "pivotY": 20, "pivotX": 20, "height": 40 } }] }] };
+        ReConnectUI.uiView = { "type": "View", "props": { "y": 0, "x": 0, "width": 1280, "visible": true, "height": 720 }, "child": [{ "type": "Rect", "props": { "y": 0, "x": 0, "width": 1136, "lineWidth": 1, "height": 640, "fillColor": "#ced26c" } }, { "type": "Image", "props": { "y": 0, "x": 0, "width": 1280, "skin": "mvs/bg.jpg", "sizeGrid": "0,0,0,0,1", "height": 720 } }, { "type": "Button", "props": { "y": 462, "x": 720, "width": 140, "var": "btn_cancel", "stateNum": 1, "skin": "mvs/exit.png", "pivotY": 0, "pivotX": 0, "name": "btn_cancel", "labelSize": 20, "labelFont": "Microsoft YaHei", "labelColors": "#000000", "labelBold": true, "label": "取消", "height": 50 } }, { "type": "Label", "props": { "y": 246, "x": 394, "width": 492, "var": "txt_message", "text": "检测到您上一局游戏还没结束，是否重连？", "name": "txt_message", "height": 29, "fontSize": 22, "color": "#8e8080", "centerY": -100, "centerX": 0, "bold": true, "align": "center" } }, { "type": "Button", "props": { "y": 462, "x": 436, "width": 140, "var": "btn_ok", "stateNum": 1, "skin": "mvs/btn1.png", "name": "btn_ok", "labelSize": 20, "labelFont": "Microsoft YaHei", "labelColors": "#000000", "labelBold": true, "label": "确定", "height": 50 } }, { "type": "Sprite", "props": { "y": 360, "x": 640, "width": 40, "visible": false, "var": "img_loading", "pivotY": 20, "pivotX": 20, "name": "img_loading", "height": 40 }, "child": [{ "type": "Image", "props": { "y": 20, "x": 20, "width": 40, "skin": "mvs/loading.png", "pivotY": 20, "pivotX": 20, "height": 40 } }] }] };
         return ReConnectUI;
     }(View));
     ui.ReConnectUI = ReConnectUI;
@@ -70664,7 +70866,7 @@ var ui;
             _super.prototype.createChildren.call(this);
             this.createView(ui.ResultUI.uiView);
         };
-        ResultUI.uiView = { "type": "View", "props": { "width": 1136, "staticCache": false, "height": 640 }, "child": [{ "type": "Rect", "props": { "y": 0, "x": 0, "width": 1136, "lineWidth": 1, "lineColor": "#f1eeee", "height": 640, "fillColor": "#8dab84" } }, { "type": "Image", "props": { "y": 0, "x": 0, "width": 1136, "skin": "mvs/bkg.png", "height": 640 } }, { "type": "Image", "props": { "y": 132, "width": 600, "skin": "mvs/note.png", "height": 388, "centerX": 0 } }, { "type": "Panel", "props": { "y": 224, "width": 421, "height": 253, "centerX": 0 }, "child": [{ "type": "Image", "props": { "y": 3, "width": 417, "visible": true, "skin": "mvs/itembg.png", "sizeGrid": "5,5,5,5", "height": 80 } }, { "type": "Image", "props": { "x": 8, "width": 87, "var": "img_Player0", "skin": "http://193.112.47.13/headimg/1.jpg", "sizeGrid": "0,0,0,0", "pivotX": -1, "name": "img_Player0", "height": 85 }, "child": [{ "type": "Sprite", "props": { "y": 8, "x": -1, "width": 88, "renderType": "mask", "height": 76 }, "child": [{ "type": "Circle", "props": { "y": 35, "x": 43, "radius": 40, "lineWidth": 1, "fillColor": "#ff0000" } }] }] }, { "type": "Label", "props": { "y": 33, "x": 103, "width": 300, "var": "name_player0", "text": "用户1", "name": "name_player0", "height": 24, "fontSize": 18, "color": "#060606", "align": "center" } }, { "type": "Image", "props": { "y": 85, "width": 417, "visible": true, "skin": "mvs/itembg.png", "sizeGrid": "5,5,5,5", "height": 80 } }, { "type": "Image", "props": { "y": 82, "x": 8, "width": 87, "var": "img_Player1", "skin": "http://193.112.47.13/headimg/1.jpg", "sizeGrid": "0,0,0,0", "pivotX": -1, "name": "img_Player1", "height": 85 }, "child": [{ "type": "Sprite", "props": { "y": 8, "x": -1, "width": 88, "renderType": "mask", "height": 76 }, "child": [{ "type": "Circle", "props": { "y": 35, "x": 43, "radius": 40, "lineWidth": 1, "fillColor": "#ff0000" } }] }] }, { "type": "Label", "props": { "y": 115, "x": 103, "width": 300, "var": "name_player1", "text": "用户1", "name": "name_player1", "height": 25, "fontSize": 18, "color": "#060606", "align": "center" } }, { "type": "Image", "props": { "y": 168, "width": 417, "visible": true, "skin": "mvs/itembg.png", "sizeGrid": "5,5,5,5", "height": 80 } }, { "type": "Image", "props": { "y": 165, "x": 8, "width": 87, "var": "img_Player2", "skin": "http://193.112.47.13/headimg/1.jpg", "sizeGrid": "0,0,0,0", "pivotX": -1, "name": "img_Player2", "height": 85 }, "child": [{ "type": "Sprite", "props": { "y": 8, "x": -1, "width": 88, "renderType": "mask", "height": 76 }, "child": [{ "type": "Circle", "props": { "y": 35, "x": 43, "radius": 40, "lineWidth": 1, "fillColor": "#ff0000" } }] }] }, { "type": "Label", "props": { "y": 198, "x": 103, "width": 300, "var": "name_player2", "text": "用户1", "name": "name_player2", "height": 24, "fontSize": 18, "color": "#060606", "align": "center" } }] }, { "type": "Button", "props": { "y": 579, "x": 1063, "var": "btn_exit", "stateNum": 1, "skin": "mvs/exit.png" } }, { "type": "Label", "props": { "y": 166, "width": 503, "text": "结算", "stroke": 1, "height": 37, "fontSize": 28, "font": "Microsoft YaHei", "color": "#000000", "centerX": 0, "bold": false, "align": "center" } }] };
+        ResultUI.uiView = { "type": "View", "props": { "width": 1280, "staticCache": false, "height": 720 }, "child": [{ "type": "Rect", "props": { "y": 0, "x": 0, "width": 1280, "lineWidth": 1, "lineColor": "#f1eeee", "height": 720, "fillColor": "#8dab84" } }, { "type": "Image", "props": { "y": 0, "x": 0, "width": 1280, "skin": "mvs/bg.jpg", "sizeGrid": "0,0,0,0,1", "height": 720 } }, { "type": "Button", "props": { "y": 570, "x": 520, "width": 240, "var": "btn_exit", "stateNum": 1, "skin": "mvs/btn1.png", "labelSize": 24, "labelColors": "#ffffff", "label": "离开游戏", "height": 70 } }, { "type": "Label", "props": { "y": 115, "x": 397, "width": 494, "var": "txt_roomID", "text": "房间号：183829939101299392", "stroke": 0, "name": "txt_roomID", "height": 37, "fontSize": 24, "font": "Microsoft YaHei", "color": "#ffffff", "bold": false, "align": "center" } }, { "type": "Panel", "props": { "y": 206, "x": 400, "width": 485, "height": 323 }, "child": [{ "type": "Image", "props": { "y": 0, "width": 480, "visible": true, "skin": "mvs/inputBox.png", "sizeGrid": "5,5,5,5", "height": 100 } }, { "type": "Image", "props": { "y": 9, "x": 8, "width": 87, "var": "img_Player0", "skin": "http://193.112.47.13/headimg/1.jpg", "sizeGrid": "0,0,0,0", "pivotX": -1, "name": "img_Player0", "height": 85 }, "child": [{ "type": "Sprite", "props": { "y": 8, "x": -1, "width": 88, "renderType": "mask", "height": 76 }, "child": [{ "type": "Circle", "props": { "y": 35, "x": 43, "radius": 40, "lineWidth": 1, "fillColor": "#ff0000" } }] }] }, { "type": "Label", "props": { "y": 42, "x": 103, "width": 300, "var": "name_player0", "text": "用户1", "name": "name_player0", "height": 24, "fontSize": 18, "color": "#060606", "align": "center" } }, { "type": "Image", "props": { "y": 108, "x": 0, "width": 480, "visible": true, "skin": "mvs/inputBox.png", "sizeGrid": "5,5,5,5", "height": 100 } }, { "type": "Image", "props": { "y": 115, "x": 8, "width": 87, "var": "img_Player1", "skin": "http://193.112.47.13/headimg/1.jpg", "sizeGrid": "0,0,0,0", "pivotX": -1, "name": "img_Player1", "height": 85 }, "child": [{ "type": "Sprite", "props": { "y": 8, "x": -1, "width": 88, "renderType": "mask", "height": 76 }, "child": [{ "type": "Circle", "props": { "y": 35, "x": 43, "radius": 40, "lineWidth": 1, "fillColor": "#ff0000" } }] }] }, { "type": "Label", "props": { "y": 144, "x": 103, "width": 300, "var": "name_player1", "text": "用户1", "name": "name_player1", "height": 25, "fontSize": 18, "color": "#060606", "align": "center" } }, { "type": "Image", "props": { "y": 216, "width": 480, "visible": true, "skin": "mvs/inputBox.png", "sizeGrid": "5,5,5,5", "height": 100 } }, { "type": "Image", "props": { "y": 223, "x": 8, "width": 87, "var": "img_Player2", "skin": "http://193.112.47.13/headimg/1.jpg", "sizeGrid": "0,0,0,0", "pivotX": -1, "name": "img_Player2", "height": 85 }, "child": [{ "type": "Sprite", "props": { "y": 8, "x": -1, "width": 88, "renderType": "mask", "height": 76 }, "child": [{ "type": "Circle", "props": { "y": 35, "x": 43, "radius": 40, "lineWidth": 1, "fillColor": "#ff0000" } }] }] }, { "type": "Label", "props": { "y": 256, "x": 103, "width": 300, "var": "name_player2", "text": "用户1", "name": "name_player2", "height": 24, "fontSize": 18, "color": "#060606", "align": "center" } }] }, { "type": "Label", "props": { "y": 56, "x": 568, "width": 144, "text": "游戏结果", "stroke": 0, "height": 48, "fontSize": 36, "font": "Microsoft YaHei", "color": "#ffffff", "bold": false, "align": "left" } }] };
         return ResultUI;
     }(View));
     ui.ResultUI = ResultUI;
@@ -70679,7 +70881,7 @@ var ui;
             _super.prototype.createChildren.call(this);
             this.createView(ui.RoomListUI.uiView);
         };
-        RoomListUI.uiView = { "type": "View", "props": { "width": 1136, "height": 640 }, "child": [{ "type": "Rect", "props": { "y": 0, "x": 0, "width": 1136, "lineWidth": 1, "height": 640, "fillColor": "#579564" } }, { "type": "Image", "props": { "y": 0, "x": 0, "width": 1136, "skin": "mvs/bkg.png", "height": 640 } }, { "type": "Button", "props": { "y": 577, "x": 1062, "var": "btn_exit", "stateNum": 1, "skin": "mvs/exit.png" } }, { "type": "Label", "props": { "y": 45, "width": 400, "var": "txt_title", "text": "房间列表", "name": "txt_title", "height": 70, "fontSize": 44, "font": "Microsoft YaHei", "color": "#0a1c27", "centerX": 0, "bold": true, "align": "center" } }, { "type": "List", "props": { "width": 459, "var": "list_roomItems", "renderType": "render", "name": "list_roomItems", "height": 341, "centerY": 0, "centerX": 0 }, "child": [{ "type": "Box", "props": { "renderType": "render" }, "child": [{ "type": "Image", "props": { "x": 1, "width": 452, "skin": "mvs/note.png", "pivotX": 1, "height": 113 } }, { "type": "Button", "props": { "y": 73, "x": 382, "width": 100, "var": "btn_entRoom", "stateNum": 1, "skin": "mvs/btn7.png", "pivotY": 23, "pivotX": 52, "name": "btn_entRoom", "labelStrokeColor": "#050505", "labelSize": 18, "labelPadding": "0", "labelFont": "Microsoft YaHei", "labelColors": "#000000", "label": "进入", "height": 42 } }, { "type": "Label", "props": { "y": 14, "x": 75, "width": 292, "var": "txt_roomID", "text": "999999999999999999999", "name": "txt_roomID", "height": 22, "fontSize": 22, "color": "#060606", "borderColor": "#f6f6f6", "align": "center" } }, { "type": "Label", "props": { "y": 42, "x": 41, "wordWrap": true, "width": 249, "var": "txt_otherInfo", "valign": "middle", "text": "label", "name": "txt_otherInfo", "height": 57, "fontSize": 14, "color": "#030303" } }] }] }] };
+        RoomListUI.uiView = { "type": "View", "props": { "width": 1280, "height": 760 }, "child": [{ "type": "Rect", "props": { "y": 0, "x": 0, "width": 1136, "lineWidth": 1, "height": 640, "fillColor": "#579564" } }, { "type": "Image", "props": { "y": 0, "x": 0, "width": 1280, "skin": "mvs/bg.jpg", "sizeGrid": "0,0,0,0,1", "height": 760 } }, { "type": "Button", "props": { "y": 63, "x": 61, "var": "btn_exit", "stateNum": 1, "skin": "mvs/icon_back.png" } }, { "type": "Label", "props": { "y": 56, "x": 120, "width": 175, "var": "txt_title", "text": "房间列表", "name": "txt_title", "height": 49, "fontSize": 36, "font": "Microsoft YaHei", "color": "#ffffff", "bold": false, "align": "left" } }, { "type": "List", "props": { "width": 799, "var": "list_roomItems", "renderType": "render", "name": "list_roomItems", "height": 461, "centerY": 0, "centerX": 0 }, "child": [{ "type": "Box", "props": { "y": 0, "x": 0, "width": 808, "renderType": "render", "height": 116 }, "child": [{ "type": "Image", "props": { "x": 1, "width": 800, "skin": "mvs/note.png", "pivotX": 1, "height": 113 } }, { "type": "Button", "props": { "y": 43, "x": 679, "width": 160, "var": "btn_entRoom", "stateNum": 1, "skin": "mvs/btn1.png", "pivotY": 23, "pivotX": 52, "name": "btn_entRoom", "labelStrokeColor": "#050505", "labelSize": 18, "labelPadding": "0", "labelFont": "Microsoft YaHei", "labelColors": "#FFFFFF", "label": "进入房间", "height": 70 } }, { "type": "Label", "props": { "y": 14, "x": 75, "width": 344, "var": "txt_roomID", "text": "999999999999999999999", "name": "txt_roomID", "height": 28, "fontSize": 24, "color": "#060606", "borderColor": "#f6f6f6", "align": "center" } }, { "type": "Label", "props": { "y": 42, "x": 12, "wordWrap": true, "width": 597, "var": "txt_otherInfo", "valign": "middle", "text": "label", "name": "txt_otherInfo", "height": 57, "fontSize": 24, "color": "#030303" } }] }] }] };
         return RoomListUI;
     }(View));
     ui.RoomListUI = RoomListUI;
@@ -70694,7 +70896,7 @@ var ui;
             _super.prototype.createChildren.call(this);
             this.createView(ui.WarningUI.uiView);
         };
-        WarningUI.uiView = { "type": "View", "props": { "width": 1136, "height": 640 }, "child": [{ "type": "Panel", "props": { "y": 0, "x": 0, "width": 1136, "height": 640, "alpha": 0.5 }, "child": [{ "type": "Rect", "props": { "y": 0, "x": 0, "width": 1135, "lineWidth": 1, "lineColor": "#9f9a9a", "height": 639, "fillColor": "#4a3838" } }] }, { "type": "Image", "props": { "width": 700, "skin": "mvs/note.png", "height": 400, "centerY": 0, "centerX": 0 } }, { "type": "Label", "props": { "x": 364, "wordWrap": true, "width": 408, "var": "txt_Message", "valign": "middle", "text": "label", "name": "txt_Message", "height": 170, "fontSize": 18, "font": "Microsoft YaHei", "color": "#030303", "centerY": 0, "centerX": 0, "bold": false, "align": "center" } }, { "type": "Button", "props": { "y": 441, "width": 122, "var": "btn_Return", "stateNum": 1, "skin": "mvs/btn7.png", "name": "btn_Return", "labelSize": 18, "labelColors": "000000", "labelBold": true, "label": "返回", "height": 44, "centerX": 0 } }, { "type": "Label", "props": { "y": 150, "width": 105, "var": "txt_title", "text": "提示 ！", "strokeColor": "#8c9c8e", "stroke": 5, "name": "txt_title", "height": 37, "fontSize": 36, "color": "#000000", "centerX": 0, "bold": true } }] };
+        WarningUI.uiView = { "type": "View", "props": { "width": 1280, "height": 760 }, "child": [{ "type": "Panel", "props": { "y": 0, "x": 0, "width": 1280, "height": 760, "alpha": 0.4 }, "child": [{ "type": "Rect", "props": { "y": 0, "x": 0, "width": 1280, "lineWidth": 1, "lineColor": "#9f9a9a", "height": 760, "fillColor": "#645f58" } }] }, { "type": "Image", "props": { "y": 180, "x": 290, "width": 700, "skin": "mvs/note.png", "height": 400, "centerY": 0, "centerX": 0 } }, { "type": "Label", "props": { "y": 283, "x": 436, "wordWrap": true, "width": 408, "var": "txt_Message", "valign": "middle", "text": "error", "name": "txt_Message", "height": 170, "fontSize": 18, "font": "Microsoft YaHei", "color": "#030303", "centerY": -12, "centerX": 0, "bold": false, "align": "center" } }, { "type": "Button", "props": { "y": 502, "width": 122, "var": "btn_Return", "stateNum": 1, "skin": "mvs/exit.png", "name": "btn_Return", "labelSize": 18, "labelColors": "000000", "labelBold": true, "label": "返回", "height": 44, "centerX": 2 } }, { "type": "Label", "props": { "y": 193, "x": 588, "width": 105, "var": "txt_title", "text": "提示 ！", "strokeColor": "#8c9c8e", "stroke": 5, "name": "txt_title", "height": 37, "fontSize": 36, "color": "#000000", "centerX": 0, "bold": true } }] };
         return WarningUI;
     }(View));
     ui.WarningUI = WarningUI;
@@ -70736,6 +70938,7 @@ var Battle = /** @class */ (function (_super) {
         _this._roleMoveGap = 10; //人物移动移动的距离
         _this.gameTimer = 120; //游戏倒计时时间
         _this.ballYLocY = 510;
+        _this.roomID = "";
         // private gameEvents:any = {};
         // 是否帧同步模式
         _this.isFrameSysc = false;
@@ -70789,7 +70992,7 @@ var Battle = /** @class */ (function (_super) {
         //帧加载变化
         Laya.timer.frameLoop(1, this, this.loadFrame);
         //同步游戏内容
-        Laya.timer.loop(20, this, this.syncGameContent);
+        Laya.timer.loop(50, this, this.syncGameContent);
         //倒计时
         Laya.timer.loop(1000, this, this.countDownTime);
         //matchvs 事件监听
@@ -70861,6 +71064,11 @@ var Battle = /** @class */ (function (_super) {
         //显示用户信息，进游戏对战界面前必须调用 setPlayes
         this.showPlayersInfo();
         return 0;
+    };
+    Battle.prototype.setOtherInfo = function (obj) {
+        if ("roomID" in obj) {
+            this.roomID = obj.roomID;
+        }
     };
     /**
      * 设置游戏时间
@@ -71214,7 +71422,7 @@ var Battle = /** @class */ (function (_super) {
         this.release();
         mvs.MsEngine.getInstance.leaveRoom("游戏结束");
         console.info("游戏结束！");
-        StageManage.getInstance.ToResult(this._playerList, flag);
+        StageManage.getInstance.ToResult(this._playerList, { roomID: this.roomID }, flag);
     };
     /**
      * 发送消息回调
@@ -71587,6 +71795,7 @@ var Login = /** @class */ (function (_super) {
         //按钮监听事件
         this.btn_ok.on(Laya.Event.CLICK, this, this.btnOkClick);
         this.btn_clear.on(Laya.Event.CLICK, this, this.btnClearClick);
+        this.btn_premise.on(Laya.Event.CLICK, this, this.btnPremiseClick);
         this.addMvsListener();
     };
     /**
@@ -71613,8 +71822,11 @@ var Login = /** @class */ (function (_super) {
         mvs.MsEngine.getInstance.init(MsConfig.channel, MsConfig.platfrom, MsConfig.gameID);
     };
     Login.prototype.btnClearClick = function () {
+        var _this = this;
         console.info("清理缓存的用户信息");
         LocalStore_Clear();
+        Laya.Tween.to(this.clearNote, { alpha: 1 }, 500);
+        setTimeout(function () { Laya.Tween.to(_this.clearNote, { alpha: 0 }, 500); }, 500);
     };
     /**
      * 初始化事件监听
@@ -71637,12 +71849,11 @@ var Login = /** @class */ (function (_super) {
         MsConfig.gameID = Number(this.txtGameID.text);
         MsConfig.appKey = this.txtAppkey.text;
         MsConfig.secretKey = this.txtSecretKey.text;
-        if (this.radio_sel.selectedIndex == 1) {
-            MsConfig.platfrom = MsConfig.PLATFROM_TYPE.rel;
-        }
-        else {
-            MsConfig.platfrom = MsConfig.PLATFROM_TYPE.alp;
-        }
+        // if(this.radio_sel.selectedIndex == 1){
+        //     MsConfig.platfrom = MsConfig.PLATFROM_TYPE.rel;
+        // }else{
+        //     MsConfig.platfrom = MsConfig.PLATFROM_TYPE.alp;
+        // }
     };
     /**
      * 获取到用户信息后 设置一下用户信息
@@ -71688,6 +71899,10 @@ var Login = /** @class */ (function (_super) {
         else {
             console.info("登录失败！");
         }
+    };
+    Login.prototype.btnPremiseClick = function (e) {
+        this.removeMvsListener();
+        StageManage.getInstance.SwitchScreen(Premise);
     };
     return Login;
 }(ui.LoginUI));
@@ -72026,12 +72241,12 @@ var Match = /** @class */ (function (_super) {
             //显示我自己的信息
             this.addPlayerList(GameData.myUser.userID, GameData.myUser.name, GameData.myUser.avatar, tableID, this.isOwner);
             if (this.joinFlag == Match.JOINFLAG.WITHROOMID) {
-                this.match_title.text = data.roomInfo.roomID;
-                this._roomID = data.roomInfo.roomID;
+                this.match_title.text = "房间号：" + data.roomInfo.roomID;
             }
             else {
                 this.match_title.text = "匹配成功——等待其他人...";
             }
+            this._roomID = data.roomInfo.roomID;
             this.matchFlag = true;
             //如果房间有其他人就显示别人信息
             var userList = data.userList;
@@ -72134,7 +72349,7 @@ var Match = /** @class */ (function (_super) {
     Match.prototype.startBattle = function () {
         console.info("开始游戏");
         this.removeMvsListener();
-        StageManage.getInstance.ToBattle(this.playerList, this.chk_FrameSysc.selected);
+        StageManage.getInstance.ToBattle(this.playerList, this.chk_FrameSysc.selected, { roomID: this._roomID });
     };
     Match.prototype.cancelStart = function (userID, roomID) {
         this.btn_cancel.visible = true;
@@ -72142,7 +72357,7 @@ var Match = /** @class */ (function (_super) {
         //取消倒计时
         Laya.timer.clear(this, this.countDown);
         if (this.joinFlag == Match.JOINFLAG.WITHROOMID || this.joinFlag == Match.JOINFLAG.CREATEROOM) {
-            this.match_title.text = roomID;
+            this.match_title.text = "房间号：" + roomID;
         }
         else {
             this.match_title.text = "匹配成功——等待其他人...";
@@ -72164,7 +72379,7 @@ var Match = /** @class */ (function (_super) {
             }
             //显示我自己的信息
             this.addPlayerList(GameData.myUser.userID, GameData.myUser.name, GameData.myUser.avatar, tableID, this.isOwner);
-            this.match_title.text = data.roomID;
+            this.match_title.text = "房间号：" + data.roomID;
             this._roomID = data.roomID;
             this.matchFlag = true;
         }
@@ -72328,6 +72543,104 @@ var __extends = (this && this.__extends) || (function () {
 /*
 * name;
 */
+var Premise = /** @class */ (function (_super) {
+    __extends(Premise, _super);
+    function Premise() {
+        var _this = _super.call(this) || this;
+        _this.init();
+        return _this;
+    }
+    Premise.prototype.init = function () {
+        this.txt_endPoint.text = MsConfig.preEndPoint;
+        this.txt_gameID.text = MsConfig.preGameID.toString();
+        this.txt_appKey.text = MsConfig.preAppKey;
+        this.txt_secretKey.text = MsConfig.preSecretKey;
+        this.txt_userID.text = "123456";
+        this.txt_token.text = "OEWIURIOJNUOGIUDSF809LJOKETGT89H";
+        this.addMvsListener();
+        this.btn_ok.on(Laya.Event.CLICK, this, this.btnOkClick);
+        this.btn_back.on(Laya.Event.CLICK, this, this.btn_backClick);
+    };
+    /**
+    * 打开 matchvs 事件监听
+    */
+    Premise.prototype.addMvsListener = function () {
+        // 初始化监听
+        mvs.MsResponse.getInstance.on(mvs.MsEvent.EVENT_INIT_RSP, this, this.initResponse);
+        // 登录 监听
+        mvs.MsResponse.getInstance.on(mvs.MsEvent.EVENT_LOGIN_RSP, this, this.loginResponse);
+    };
+    /**
+     * 移除 matchvs 事件监听
+     */
+    Premise.prototype.removeMvsListener = function () {
+        mvs.MsResponse.getInstance.off(mvs.MsEvent.EVENT_INIT_RSP, this, this.initResponse);
+        mvs.MsResponse.getInstance.off(mvs.MsEvent.EVENT_LOGIN_RSP, this, this.loginResponse);
+    };
+    /**
+     * 初始化回调
+     * @param event
+     */
+    Premise.prototype.initResponse = function (event) {
+        console.info("初始化回调：", event.data.status);
+        if (event.data.status == 200) {
+            //注册用户
+            console.info("初始化成功！");
+            GameData.myUser.userID = Number(this.txt_userID.text);
+            GameData.myUser.token = this.txt_token.text;
+            var res = mvs.MsEngine.getInstance.login(GameData.myUser.userID, GameData.myUser.token, MsConfig.preGameID, MsConfig.appKey, MsConfig.secretKey);
+            if (res != 0) {
+                console.log("登录失败：", res);
+            }
+        }
+        else {
+            console.info("初始化失败！");
+        }
+    };
+    /**
+     * 登录回调
+     * @param event
+     */
+    Premise.prototype.loginResponse = function (event) {
+        var data = event.data;
+        if (data.status == 200) {
+            this.removeMvsListener();
+            if (data.roomID !== "0") {
+                console.info("登录成功！可以重新连接:" + data.roomID);
+                StageManage.getInstance.SwitchScreen(ReConnect);
+            }
+            else {
+                console.info("登录成功！跳到大厅");
+                //这里页面跳转
+                StageManage.getInstance.ToLobby();
+            }
+        }
+        else {
+            console.info("登录失败！");
+        }
+    };
+    Premise.prototype.btnOkClick = function (e) {
+        mvs.MsEngine.getInstance.premiseInit(this.txt_endPoint.text, Number(this.txt_gameID.text));
+    };
+    Premise.prototype.btn_backClick = function (e) {
+        StageManage.getInstance.ToLogin();
+    };
+    return Premise;
+}(ui.PremiseUI));
+//# sourceMappingURL=Premise.js.map
+var __extends = (this && this.__extends) || (function () {
+    var extendStatics = Object.setPrototypeOf ||
+        ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
+        function (d, b) { for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p]; };
+    return function (d, b) {
+        extendStatics(d, b);
+        function __() { this.constructor = d; }
+        d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
+    };
+})();
+/*
+* name;
+*/
 var ReConnect = /** @class */ (function (_super) {
     __extends(ReConnect, _super);
     function ReConnect() {
@@ -72337,6 +72650,7 @@ var ReConnect = /** @class */ (function (_super) {
         _this.connNum = 0;
         _this.playerList = []; //匹配到的用户列表
         _this.actions = {};
+        _this.roomID = "";
         _this.initView();
         return _this;
     }
@@ -72356,7 +72670,6 @@ var ReConnect = /** @class */ (function (_super) {
         mvs.MsResponse.getInstance.on(mvs.MsEvent.EVENT_RECONNECT_RSP, this, this.reconnectResponse);
         mvs.MsResponse.getInstance.on(mvs.MsEvent.EVENT_SENDEVENT_RSP, this, this.sendEventResponse);
         mvs.MsResponse.getInstance.on(mvs.MsEvent.EVENT_SENDEVENT_NTFY, this, this.sendEventNotify);
-        mvs.MsResponse.getInstance.on(mvs.MsEvent.EVENT_GETROOMDETAIL_RSP, this, this.getRoomDetailResponse);
     };
     /**
      * 关闭监听 matchvs
@@ -72365,7 +72678,6 @@ var ReConnect = /** @class */ (function (_super) {
         mvs.MsResponse.getInstance.off(mvs.MsEvent.EVENT_RECONNECT_RSP, this, this.reconnectResponse);
         mvs.MsResponse.getInstance.off(mvs.MsEvent.EVENT_SENDEVENT_RSP, this, this.sendEventResponse);
         mvs.MsResponse.getInstance.off(mvs.MsEvent.EVENT_SENDEVENT_NTFY, this, this.sendEventNotify);
-        mvs.MsResponse.getInstance.off(mvs.MsEvent.EVENT_GETROOMDETAIL_RSP, this, this.getRoomDetailResponse);
     };
     /**
      *
@@ -72377,7 +72689,7 @@ var ReConnect = /** @class */ (function (_super) {
     };
     ReConnect.prototype.btnOkEvent = function (e) {
         this.btn_ok.visible = false;
-        Laya.Tween.to(this.btn_cancel, { x: 568 }, 1000);
+        Laya.Tween.to(this.btn_cancel, { x: 578 }, 1000);
         this.img_loading.visible = true;
         this.txt_message.text = "准备重连";
         Laya.timer.frameLoop(1, this, this.animate);
@@ -72416,8 +72728,13 @@ var ReConnect = /** @class */ (function (_super) {
         Laya.timer.clearAll(this);
         console.info("重连房间返回数据：", data);
         if (data.status == 200) {
-            console.info("重连进入房间成功!");
-            this.reconnectSuccess(data.roomInfo.roomID);
+            if (data.roomInfo.state == 2) {
+                console.info("重连进入房间成功!");
+                this.reconnectSuccess(data.roomInfo.roomID);
+            }
+            else {
+                this.txt_message.text = "游戏已经结束，请返回到大厅..." + data.status;
+            }
         }
         else {
             this.txt_message.text = "重连失败请返回到大厅..." + data.status;
@@ -72447,9 +72764,8 @@ var ReConnect = /** @class */ (function (_super) {
      * 重连成功
      */
     ReConnect.prototype.reconnectSuccess = function (roomID) {
-        this.txt_message.text = "正在查询房间状态...";
-        //重连成功需要查看房间状态
-        mvs.MsEngine.getInstance.getRoomDetail(roomID);
+        this.roomID = roomID;
+        this.senOkMsgToOther();
     };
     /**
      *
@@ -72492,11 +72808,16 @@ var ReConnect = /** @class */ (function (_super) {
             }
         }
     };
+    /**
+     * 开始游戏
+     * @param type 游戏类型，标记是不是帧同步模式
+     * @param time 重连开始游戏时剩余时间值
+     */
     ReConnect.prototype.startGame = function (type, time) {
         this.release();
         if (this.playerList.length === GameData.maxPlayerNum) {
             //开始游戏
-            StageManage.getInstance.ToBattle(this.playerList, Boolean(type), time);
+            StageManage.getInstance.ToBattle(this.playerList, Boolean(type), { roomID: this.roomID }, time);
         }
         else {
             //跳到大厅
@@ -72504,26 +72825,18 @@ var ReConnect = /** @class */ (function (_super) {
         }
     };
     /**
-     * 查询房间信息
-     * @param e
+     * 发送链接成功消息，
      */
-    ReConnect.prototype.getRoomDetailResponse = function (e) {
-        var data = e.data;
-        if (data.status === 200 && data.state === 2) {
-            this.txt_message.text = "等待同步游戏信息...";
-            var event_1 = {
-                action: GameData.MSG_ACTION.RECONNECT_OK
-            };
-            //发送消息告诉其他玩家OK
-            var res = mvs.MsEngine.getInstance.sendEvent(JSON.stringify(event_1));
-            if (!res || res.result !== 0) {
-                return console.log('重连发送信息失败');
-            }
-        }
-        else {
-            this.release();
-            mvs.MsEngine.getInstance.leaveRoom("重连查询房间失败");
-            this.txt_message.text = "房间状态查询失败，以主动离开房间，请返回到大厅";
+    ReConnect.prototype.senOkMsgToOther = function () {
+        this.txt_message.text = "等待同步游戏信息...";
+        var event = {
+            action: GameData.MSG_ACTION.RECONNECT_OK
+        };
+        //发送消息告诉其他玩家OK
+        var res = mvs.MsEngine.getInstance.sendEvent(JSON.stringify(event));
+        if (!res || res.result !== 0) {
+            this.txt_message.text = "同步游戏信息...失败，请取消";
+            console.log('重连发送信息失败');
         }
     };
     return ReConnect;
@@ -72544,9 +72857,13 @@ var __extends = (this && this.__extends) || (function () {
 */
 var Result = /** @class */ (function (_super) {
     __extends(Result, _super);
-    function Result(userList, flag) {
+    function Result(userList, obj, flag) {
         var _this = _super.call(this) || this;
         _this.playerList = [];
+        _this.roomID = "";
+        if ("roomID" in obj) {
+            _this.roomID = obj.roomID;
+        }
         _this.initView(userList);
         return _this;
     }
@@ -72575,6 +72892,7 @@ var Result = /** @class */ (function (_super) {
         });
     };
     Result.prototype.showInfo = function () {
+        this.txt_roomID.text = "房间号：" + this.roomID;
         for (var i = 0; i < this.playerList.length; i++) {
             var name_1 = this.playerList[i].name == "" ? this.playerList[i].userID : this.playerList[i].name;
             this["name_player" + i].text = name_1 + " 分数[" + this.playerList[i].score + "]";
@@ -73160,18 +73478,12 @@ var Handler = laya.utils.Handler;
 var GameMain = /** @class */ (function () {
     function GameMain() {
         Laya.MiniAdpter.init();
-        Laya.init(1134, 640, WebGL);
+        Laya.init(1280, 720, WebGL);
         Laya.stage.scaleMode = Laya.Stage.SCALE_SHOWALL;
         Laya.stage.alignH = "center";
         Laya.stage.alignV = "center";
-        //激活资源版本控制
-        // Laya.ResourceVersion.enable("version.json", Handler.create(null, this.beginLoad), Laya.ResourceVersion.FILENAME_VERSION);
         Laya.loader.load(["res/atlas/mvs.atlas", "res/atlas/mvs/role.atlas", GameData.battleBgimgUrl], Handler.create(this, this.onLoaded));
     }
-    // private beginLoad(){
-    //     //加载资源
-    //     Laya.loader.load(["res/atlas/mvs.atlas","res/atlas/mvs/role.atlas", GameData.battleBgimgUrl], Handler.create(this, this.onLoaded));
-    // }
     GameMain.prototype.onLoaded = function () {
         //实例UI界面
         var login = new Login();

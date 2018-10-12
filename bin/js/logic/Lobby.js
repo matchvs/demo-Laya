@@ -22,7 +22,7 @@ var Lobby = /** @class */ (function (_super) {
     Lobby.prototype.init = function () {
         this.img_header.skin = GameData.myUser.avatar;
         this.name_head.text = GameData.myUser.userID + ":" + GameData.myUser.name;
-        console.info("单机按钮监听");
+        console.info("单击按钮监听");
         this.btn_randMatch.on(Laya.Event.CLICK, this, this.btnRandMatchClick);
         this.btn_createRoom.on(Laya.Event.CLICK, this, this.btnCreateRoomClick);
         this.btn_joinWithProperty.on(Laya.Event.CLICK, this, this.btnJoinWithPropertyClick);

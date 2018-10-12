@@ -465,7 +465,7 @@ class Match extends ui.MatchUI{
             }
             Laya.timer.clearAll(this);
         }else{
-            console.info("人数不够");
+            console.info("倒计时中当前人数：", this.playerList.length);
         }
     }
 
@@ -567,6 +567,9 @@ class Match extends ui.MatchUI{
      */
     private wipePlayerLocation(userID:number, owner:number){
         this.delPlayerList(userID);
+
+        this.isOwner = owner == GameData.myUser.userID;
+
         for(let i = 0; i < this.playerList.length; i++){
             if(owner == this.playerList[i].userID){
                 this.playerList[i].isOwner = true;

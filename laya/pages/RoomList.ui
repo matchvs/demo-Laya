@@ -3,7 +3,7 @@
     "type":"View",
     "selectedBox":1,
     "selecteID":18,
-    "props":{"width":1280,"sceneColor":"#000000","height":760},
+    "props":{"width":1280,"sceneColor":"#000000","height":720},
     "nodeParent":-1,
     "label":"View",
     "isOpen":true,
@@ -15,7 +15,7 @@
         {
             "x":15,
             "type":"Rect",
-            "props":{"y":0,"x":0,"width":1136,"lineWidth":1,"height":640,"fillColor":"#579564"},
+            "props":{"y":0,"x":0,"width":1280,"lineWidth":0,"height":720,"fillColor":"#579564"},
             "nodeParent":1,
             "label":"Rect",
             "isDirectory":false,
@@ -30,7 +30,7 @@
         {
             "x":15,
             "type":"Image",
-            "props":{"y":0,"x":0,"width":1280,"skin":"mvs/bg.jpg","sizeGrid":"0,0,0,0,1","height":760},
+            "props":{"y":0,"x":0,"width":1280,"skin":"mvs/bg.jpg","sizeGrid":"0,0,0,0,1","height":720},
             "nodeParent":1,
             "label":"Image",
             "isDirectory":false,
@@ -71,7 +71,7 @@
         {
             "x":15,
             "type":"List",
-            "props":{"width":799,"var":"list_roomItems","renderType":"render","name":"list_roomItems","height":461,"centerY":0,"centerX":0},
+            "props":{"width":799,"var":"list_roomItems","renderType":"render","name":"list_roomItems","height":461,"centerY":4,"centerX":13},
             "nodeParent":1,
             "label":"List(list_roomItems)",
             "isOpen":true,

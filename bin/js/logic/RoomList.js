@@ -139,6 +139,7 @@ var RoomList = /** @class */ (function (_super) {
      * @param a
      */
     RoomList.prototype.enterRoomEvent = function (roomID, a) {
+        this.release();
         StageManage.getInstance.ToMatch(Match.JOINFLAG.WITHROOMID, roomID);
     };
     RoomList.prototype.exitClick = function (e) {

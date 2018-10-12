@@ -2,7 +2,7 @@
     "x":0,
     "type":"View",
     "selectedBox":1,
-    "selecteID":33,
+    "selecteID":30,
     "props":{"width":1280,"sceneColor":"#000000","height":720,"alpha":1},
     "nodeParent":-1,
     "label":"View",
@@ -30,7 +30,7 @@
         {
             "x":15,
             "type":"Button",
-            "props":{"y":205,"x":309,"width":192,"var":"btn_randMatch","name":"btn_randMatch","labelSize":48,"labelColors":"#FFFFFF","label":"随机匹配","height":67,"alpha":1},
+            "props":{"y":205,"x":309,"width":204,"var":"btn_randMatch","name":"btn_randMatch","labelSize":48,"labelColors":"#FFFFFF","label":"随机匹配","height":67,"alpha":1},
             "nodeParent":1,
             "label":"Button(btn_randMatch)",
             "isDirectory":false,
@@ -43,7 +43,7 @@
         {
             "x":15,
             "type":"Button",
-            "props":{"y":330,"x":309,"width":196,"var":"btn_joinWithProperty","sizeGrid":"5,5,5,5","labelStroke":0,"labelSize":28,"labelColors":"#ffffff","labelBold":false,"label":"自定义属性匹配","height":40,"alpha":1},
+            "props":{"y":330,"x":309,"width":212,"var":"btn_joinWithProperty","sizeGrid":"5,5,5,5","labelStroke":0,"labelSize":28,"labelColors":"#ffffff","labelBold":false,"label":"自定义属性匹配","height":40,"alpha":1},
             "nodeParent":1,
             "label":"Button(btn_joinWithProperty)",
             "isDirectory":false,

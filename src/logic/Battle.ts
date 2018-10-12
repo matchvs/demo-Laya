@@ -666,8 +666,10 @@ class Battle extends ui.BattleUI{
     private setFrameSyncResponse(e:mvs.MsEventData){
         let data = e.data;
         if(data.status == 200){
+            this.isFrameSysc = true;
             console.info("帧同步设置成功！");
         }else{
+            this.isFrameSysc = false;
             console.info("帧同步设置失败！");
         }
     }

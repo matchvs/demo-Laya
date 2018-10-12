@@ -149,6 +149,7 @@ class RoomList extends ui.RoomListUI{
      * @param a 
      */
     private enterRoomEvent(roomID:string,a:Laya.Event){
+        this.release();
         StageManage.getInstance.ToMatch(Match.JOINFLAG.WITHROOMID,roomID);
     }
 

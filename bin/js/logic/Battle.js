@@ -582,9 +582,11 @@ var Battle = /** @class */ (function (_super) {
     Battle.prototype.setFrameSyncResponse = function (e) {
         var data = e.data;
         if (data.status == 200) {
+            this.isFrameSysc = true;
             console.info("帧同步设置成功！");
         }
         else {
+            this.isFrameSysc = false;
             console.info("帧同步设置失败！");
         }
     };

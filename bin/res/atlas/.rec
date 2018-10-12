@@ -1,19 +1,17 @@
 D .
 D mvs
-R 4A1395CD bg.jpg
-R EE3F68DB bg_scroll.png
+P 4A1395CD bg.jpg
 P 3E3B4FFE boll.png
 P 508D99B2 btn1.png
 P 8C52590E clear.png
 P 43C506E3 clearNote.png
 P E04D5EA6 exit.png
-P B7F3F07B footer_text.png
 P 9A03CF78 home.png
 P D326C31A icon_arrow_left.png
 P F42CCCC3 icon_back.png
 P 947B00E4 inputBox.png
 P 40060A5B loading.png
-R 21F142B1 note.png
+P 21F142B1 note.png
 P B282AF13 radio4.png
 D mvs/role
 P 2EA5E849 runleft_01.png
