@@ -23,7 +23,7 @@ class Battle extends ui.BattleUI{
     private moveLeft:boolean = false;
 
     private _weekInterval = 100;        //人物移动动画的时间
-    private _ballInterval = 2000;        //人物移动动画的时间
+    private _ballInterval = 1000;        //球移动动画的时间
 
     private _roleMoveGap:number = 10;   //人物移动移动的距离
 
@@ -114,6 +114,12 @@ class Battle extends ui.BattleUI{
         Laya.timer.loop(50, this, this.syncGameContent);
         //倒计时
         Laya.timer.loop(1000, this, this.countDownTime);
+
+        if(this._myPlayer.isOwner){
+            Laya.timer.loop(500, this, ()=>{this.syncBallInfo(this.img_ball.x);});
+        }else{
+            
+        }
 
         //matchvs 事件监听
         this.addMvsListener();
@@ -290,7 +296,6 @@ class Battle extends ui.BattleUI{
         }
 
         namePlayer.x=terminalX;
-        //Laya.Tween.to(spritePlayer, { x: terminalX }, this._weekInterval*2);
         this.roleMoveAnimal(spritePlayer, terminalX, spritePlayer.y);
     }
 
@@ -325,7 +330,6 @@ class Battle extends ui.BattleUI{
         }
 
         namePlayer.x=terminalX;
-        // Laya.Tween.to(spritePlayer, { x: terminalX }, this._weekInterval);
         this.roleMoveAnimal(spritePlayer, terminalX, spritePlayer.y);
     }
 
@@ -373,9 +377,10 @@ class Battle extends ui.BattleUI{
         if(msg != "" && msg.indexOf("action") >= 0){
             let obj = JSON.parse(msg);
             if(obj.action == GameData.MSG_ACTION.BALL_MOVE){
+                console.log("球位置变化：",msg);
                 //球移动
                 Laya.Tween.to(this.img_ball, { x : obj.x }, this._ballInterval, Laya.Ease.quintOut);
-                this.img_ball.rotation += 250;
+                //this.img_ball.rotation += 250;
             }else if(obj.action == GameData.MSG_ACTION.ROLE_LOCATION){
                 //玩家位置消息
                 let tableID:number = 0;
@@ -466,7 +471,7 @@ class Battle extends ui.BattleUI{
             action:GameData.MSG_ACTION.BALL_MOVE,
             x:loc
         });
-        console.info("发送球移动");
+        console.info("发送球移动:",data);
         this.sendMsg(data);
     }
 
@@ -495,7 +500,6 @@ class Battle extends ui.BattleUI{
         
         if(e.type == Laya.Event.MOUSE_DOWN){
             console.info("鼠标按下");
-            //Laya.timer.frameLoop(1, this, this.roleMoverLeft)
             this.moveRight = false;
             this.moveLeft = true;
         }
@@ -508,7 +512,6 @@ class Battle extends ui.BattleUI{
                 this.roleAnimal1.gotoAndStop(0);
             }
             
-            //Laya.timer.clear(this,this.roleMoverLeft);
         }
     }
 
@@ -522,7 +525,6 @@ class Battle extends ui.BattleUI{
             console.info("鼠标按下");
             this.moveRight = true;
             this.moveLeft = false;
-            //Laya.timer.frameLoop(1, this, this.roleMoveRight)
         }
         else {
             console.info("鼠标抬起");
@@ -532,7 +534,6 @@ class Battle extends ui.BattleUI{
                 this.roleAnimal1.stop();
                 this.roleAnimal1.gotoAndStop(0);
             }
-            //Laya.timer.clear(this,this.roleMoveRight);
         }
     }
 
@@ -559,11 +560,10 @@ class Battle extends ui.BattleUI{
         if(currLoca_x > this.stageW || currLoca_x < 50){
             currLoca_x = this.getDistance(50, this.stageW);
         }
-
+        
         //同步球位置
         this.syncBallInfo(currLoca_x);
         Laya.Tween.to(this.img_ball, { x : currLoca_x}, this._ballInterval, Laya.Ease.quintOut);
-        //Laya.Tween.from(this.img_ball, { y : currLoca_y }, this._ballInterval,Laya.Ease.quartInOut);
         this.img_ball.rotation += 250;
     }
 

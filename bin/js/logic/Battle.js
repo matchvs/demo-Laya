@@ -30,7 +30,7 @@ var Battle = /** @class */ (function (_super) {
         _this.moveRight = false;
         _this.moveLeft = false;
         _this._weekInterval = 100; //人物移动动画的时间
-        _this._ballInterval = 2000; //人物移动动画的时间
+        _this._ballInterval = 1000; //球移动动画的时间
         _this._roleMoveGap = 10; //人物移动移动的距离
         _this.gameTimer = 120; //游戏倒计时时间
         _this.ballYLocY = 510;
@@ -49,6 +49,7 @@ var Battle = /** @class */ (function (_super) {
         Laya.loader.load(["./res/atlas/mvs/role.atlas"], Handler.create(this, this.onLoaded));
     };
     Battle.prototype.onLoaded = function () {
+        var _this = this;
         this.img_battle.skin = GameData.battleBgimgUrl;
         this.roleAnimal1 = new Laya.Animation();
         this.Sprite_player1.addChild(this.roleAnimal1);
@@ -91,6 +92,11 @@ var Battle = /** @class */ (function (_super) {
         Laya.timer.loop(50, this, this.syncGameContent);
         //倒计时
         Laya.timer.loop(1000, this, this.countDownTime);
+        if (this._myPlayer.isOwner) {
+            Laya.timer.loop(500, this, function () { _this.syncBallInfo(_this.img_ball.x); });
+        }
+        else {
+        }
         //matchvs 事件监听
         this.addMvsListener();
     };
@@ -240,7 +246,6 @@ var Battle = /** @class */ (function (_super) {
             terminalX = location;
         }
         namePlayer.x = terminalX;
-        //Laya.Tween.to(spritePlayer, { x: terminalX }, this._weekInterval*2);
         this.roleMoveAnimal(spritePlayer, terminalX, spritePlayer.y);
     };
     /**
@@ -269,7 +274,6 @@ var Battle = /** @class */ (function (_super) {
             terminalX = location;
         }
         namePlayer.x = terminalX;
-        // Laya.Tween.to(spritePlayer, { x: terminalX }, this._weekInterval);
         this.roleMoveAnimal(spritePlayer, terminalX, spritePlayer.y);
     };
     //检测是否碰撞到球
@@ -313,9 +317,10 @@ var Battle = /** @class */ (function (_super) {
         if (msg != "" && msg.indexOf("action") >= 0) {
             var obj_1 = JSON.parse(msg);
             if (obj_1.action == GameData.MSG_ACTION.BALL_MOVE) {
+                console.log("球位置变化：", msg);
                 //球移动
                 Laya.Tween.to(this.img_ball, { x: obj_1.x }, this._ballInterval, Laya.Ease.quintOut);
-                this.img_ball.rotation += 250;
+                //this.img_ball.rotation += 250;
             }
             else if (obj_1.action == GameData.MSG_ACTION.ROLE_LOCATION) {
                 //玩家位置消息
@@ -406,7 +411,7 @@ var Battle = /** @class */ (function (_super) {
             action: GameData.MSG_ACTION.BALL_MOVE,
             x: loc
         });
-        console.info("发送球移动");
+        console.info("发送球移动:", data);
         this.sendMsg(data);
     };
     //游戏内容同步
@@ -430,7 +435,6 @@ var Battle = /** @class */ (function (_super) {
     Battle.prototype.btnLeftMoveEvent = function (e) {
         if (e.type == Laya.Event.MOUSE_DOWN) {
             console.info("鼠标按下");
-            //Laya.timer.frameLoop(1, this, this.roleMoverLeft)
             this.moveRight = false;
             this.moveLeft = true;
         }
@@ -442,7 +446,6 @@ var Battle = /** @class */ (function (_super) {
                 this.roleAnimal1.stop();
                 this.roleAnimal1.gotoAndStop(0);
             }
-            //Laya.timer.clear(this,this.roleMoverLeft);
         }
     };
     /**
@@ -454,7 +457,6 @@ var Battle = /** @class */ (function (_super) {
             console.info("鼠标按下");
             this.moveRight = true;
             this.moveLeft = false;
-            //Laya.timer.frameLoop(1, this, this.roleMoveRight)
         }
         else {
             console.info("鼠标抬起");
@@ -464,7 +466,6 @@ var Battle = /** @class */ (function (_super) {
                 this.roleAnimal1.stop();
                 this.roleAnimal1.gotoAndStop(0);
             }
-            //Laya.timer.clear(this,this.roleMoveRight);
         }
     };
     /**
@@ -492,7 +493,6 @@ var Battle = /** @class */ (function (_super) {
         //同步球位置
         this.syncBallInfo(currLoca_x);
         Laya.Tween.to(this.img_ball, { x: currLoca_x }, this._ballInterval, Laya.Ease.quintOut);
-        //Laya.Tween.from(this.img_ball, { y : currLoca_y }, this._ballInterval,Laya.Ease.quartInOut);
         this.img_ball.rotation += 250;
     };
     /**
