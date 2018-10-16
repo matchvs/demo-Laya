@@ -323,6 +323,9 @@ var mvs;
                 userID: rsp.userID,
                 status: rsp.status
             };
+            if (rsp.status == 400) {
+                return;
+            }
             this.event(mvs.MsEvent.EVENT_KICKPLAYER_RSP, new mvs.MsEventData(data));
         };
         /**

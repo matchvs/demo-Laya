@@ -337,6 +337,9 @@ module mvs {
 				userID:rsp.userID,
 				status:rsp.status
 			};
+			if(rsp.status == 400){
+				return;
+			}
 			this.event(MsEvent.EVENT_KICKPLAYER_RSP, new MsEventData(data));
 
 		}
