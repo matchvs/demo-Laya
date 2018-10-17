@@ -139,7 +139,7 @@ class Battle extends ui.BattleUI{
 
         //设置帧同步
 		mvs.MsResponse.getInstance.on(mvs.MsEvent.EVENT_SETFRAMESYNC_RSP, this,this.setFrameSyncResponse);
-		mvs.MsResponse.getInstance.on(mvs.MsEvent.EVENT_FRAMEUPDATE, this, this.frameUpdate,);
+		mvs.MsResponse.getInstance.on(mvs.MsEvent.EVENT_FRAMEUPDATE, this, this.frameUpdate);
         
         //对手网络异常触发回调
         mvs.MsResponse.getInstance.on(mvs.MsEvent.EVENT_NETWORKSTATE_NTFY, this, this.networkStateNotify);
@@ -429,6 +429,7 @@ class Battle extends ui.BattleUI{
         //获取玩家信息
         this._playerList.forEach((p)=>{
             if(userID === p.userID){
+                this["name_Player"+p.tableID].text = p.name;
                 hisScore = p.score;
             }else{
                 userlist.push({name:p.name, avatar:p.avatar, userID:p.userID});
