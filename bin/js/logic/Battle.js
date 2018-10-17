@@ -368,15 +368,20 @@ var Battle = /** @class */ (function (_super) {
     Battle.prototype.reconnectAck = function (userID) {
         var userlist = [];
         var hisScore = 0;
+        var tabieid = -1;
+        var name = "";
         //获取玩家信息
         this._playerList.forEach(function (p) {
             if (userID === p.userID) {
+                tabieid = p.tableID;
+                name = p.name;
                 hisScore = p.score;
             }
             else {
                 userlist.push({ name: p.name, avatar: p.avatar, userID: p.userID });
             }
         });
+        this["name_Player" + tabieid].text = name;
         var event = {
             action: GameData.MSG_ACTION.RECONNECT_ACK,
             userList: userlist,

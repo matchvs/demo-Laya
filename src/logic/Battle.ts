@@ -426,15 +426,21 @@ class Battle extends ui.BattleUI{
     private reconnectAck(userID){
         let userlist:Array<any> = [];
         let hisScore:number = 0;
+        let tabieid = -1;
+        let name = "";
         //获取玩家信息
         this._playerList.forEach((p)=>{
             if(userID === p.userID){
-                this["name_Player"+p.tableID].text = p.name;
+                tabieid = p.tableID;
+                name = p.name;
                 hisScore = p.score;
             }else{
                 userlist.push({name:p.name, avatar:p.avatar, userID:p.userID});
             }
         });
+        
+        this["name_Player"+tabieid].text = name;
+
         let event = {
             action:GameData.MSG_ACTION.RECONNECT_ACK,
             userList:userlist,
