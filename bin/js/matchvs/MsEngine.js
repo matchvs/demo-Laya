@@ -27,8 +27,8 @@ var mvs;
          * @param {string} platform
          * @param {number} gameID
          */
-        MsEngine.prototype.init = function (channel, platform, gameID) {
-            var res = this._engine.init(mvs.MsResponse.getInstance.getResponse(), channel, platform, gameID);
+        MsEngine.prototype.init = function (channel, platform, gameID, appkey) {
+            var res = this._engine.init(mvs.MsResponse.getInstance.getResponse(), channel, platform, gameID, appkey, 1);
             if (res !== 200) {
                 console.info("[MsEngine init failed] resCode:", res);
                 return res;
@@ -39,8 +39,8 @@ var mvs;
         /**
          * 独立部署的初始化
          */
-        MsEngine.prototype.premiseInit = function (endPoint, gameID) {
-            var res = this._engine.premiseInit(mvs.MsResponse.getInstance.getResponse(), endPoint, gameID);
+        MsEngine.prototype.premiseInit = function (endPoint, gameID, appkey) {
+            var res = this._engine.premiseInit(mvs.MsResponse.getInstance.getResponse(), endPoint, gameID, appkey);
             if (res !== 0) {
                 console.info("[MsEngine premiseInit failed] resCode:", res);
                 return res;
@@ -56,8 +56,8 @@ var mvs;
          * @param {string} appkey 游戏 appkey
          * @param {string} secretkey 游戏 secretkey
          */
-        MsEngine.prototype.login = function (userID, token, gameID, appkey, secretkey) {
-            var res = this._engine.login(userID, token, gameID, 1, appkey, secretkey, "eglejjddg", 0);
+        MsEngine.prototype.login = function (userID, token) {
+            var res = this._engine.login(userID, token, "eglejjddg");
             console.info("[MsEngine login] resCode:", res);
             return res;
         };

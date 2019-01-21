@@ -27,13 +27,13 @@ var PlatformType = /** @class */ (function () {
 var MsConfig = /** @class */ (function () {
     function MsConfig() {
     }
-    MsConfig.channel = "Matchvs";
+    MsConfig.channel = "jdge";
     MsConfig.PLATFROM_TYPE = new PlatformType("alpha", "release");
     MsConfig.platfrom = MsConfig.PLATFROM_TYPE.alp;
     //Matchvs 云托管游戏信息
-    MsConfig.gameID = 201489;
-    MsConfig.appKey = "4fb6406305f44f1aad0c40e5946ffe3d";
-    MsConfig.secretKey = "5035d62b75bd4941b182579f2b8fc12c";
+    MsConfig.gameID = 5;
+    MsConfig.appKey = "b85d3ac0cc0541c59d391e3e56734352";
+    MsConfig.secretKey = "6f6ac46e192c48ef9d265810a9d70685";
     //独立部署游戏信息
     MsConfig.preGameID = 1;
     MsConfig.preAppKey = "appkey01";

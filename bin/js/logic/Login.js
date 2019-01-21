@@ -50,7 +50,7 @@ var Login = /** @class */ (function (_super) {
     };
     Login.prototype.btnOkClick = function (e) {
         this.setMsConfigInfo();
-        mvs.MsEngine.getInstance.init(MsConfig.channel, MsConfig.platfrom, MsConfig.gameID);
+        mvs.MsEngine.getInstance.init(MsConfig.channel, MsConfig.platfrom, MsConfig.gameID, MsConfig.appKey);
     };
     Login.prototype.btnClearClick = function () {
         var _this = this;
@@ -105,7 +105,7 @@ var Login = /** @class */ (function (_super) {
         if (data.status == 0) {
             this.setUserInfo(data);
             //登录
-            mvs.MsEngine.getInstance.login(GameData.myUser.userID, GameData.myUser.token, MsConfig.gameID, MsConfig.appKey, MsConfig.secretKey);
+            mvs.MsEngine.getInstance.login(GameData.myUser.userID, GameData.myUser.token);
         }
         else {
             console.info("注册用户失败:", data);

@@ -56,7 +56,7 @@ var Premise = /** @class */ (function (_super) {
             console.info("初始化成功！");
             GameData.myUser.userID = Number(this.txt_userID.text);
             GameData.myUser.token = this.txt_token.text;
-            var res = mvs.MsEngine.getInstance.login(GameData.myUser.userID, GameData.myUser.token, MsConfig.preGameID, MsConfig.appKey, MsConfig.secretKey);
+            var res = mvs.MsEngine.getInstance.login(GameData.myUser.userID, GameData.myUser.token);
             if (res != 0) {
                 console.log("登录失败：", res);
             }
@@ -88,7 +88,7 @@ var Premise = /** @class */ (function (_super) {
         }
     };
     Premise.prototype.btnOkClick = function (e) {
-        mvs.MsEngine.getInstance.premiseInit(this.txt_endPoint.text, Number(this.txt_gameID.text));
+        mvs.MsEngine.getInstance.premiseInit(this.txt_endPoint.text, Number(this.txt_gameID.text), this.txt_appKey.text);
     };
     Premise.prototype.btn_backClick = function (e) {
         StageManage.getInstance.ToLogin();

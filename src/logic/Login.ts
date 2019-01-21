@@ -45,7 +45,7 @@ class Login extends ui.LoginUI{
 
     private btnOkClick(e:Laya.Event){
         this.setMsConfigInfo();
-        mvs.MsEngine.getInstance.init(MsConfig.channel, MsConfig.platfrom, MsConfig.gameID);
+        mvs.MsEngine.getInstance.init(MsConfig.channel, MsConfig.platfrom, MsConfig.gameID,MsConfig.appKey);
     }
 
     private btnClearClick(){
@@ -103,7 +103,7 @@ class Login extends ui.LoginUI{
         if(data.status == 0){
             this.setUserInfo(data);
             //登录
-            mvs.MsEngine.getInstance.login(GameData.myUser.userID,GameData.myUser.token, MsConfig.gameID, MsConfig.appKey, MsConfig.secretKey);
+            mvs.MsEngine.getInstance.login(GameData.myUser.userID,GameData.myUser.token);
 
         }else{
             console.info("注册用户失败:",data);

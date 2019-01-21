@@ -25,8 +25,8 @@ module mvs {
 		 * @param {string} platform
 		 * @param {number} gameID
 		 */
-		public init(channel:string, platform:string, gameID:number):number{
-			let res = this._engine.init(MsResponse.getInstance.getResponse(),channel,platform,gameID);
+		public init(channel:string, platform:string, gameID:number, appkey:string):number{
+			let res = this._engine.init(MsResponse.getInstance.getResponse(),channel,platform,gameID, appkey, 1);
 			if (res !== 200){
 				console.info("[MsEngine init failed] resCode:",res);
 				return res;
@@ -38,8 +38,8 @@ module mvs {
 		/**
 		 * 独立部署的初始化
 		 */
-		public premiseInit(endPoint:string, gameID:number):number{
-			let res = this._engine.premiseInit( MsResponse.getInstance.getResponse(),endPoint, gameID);
+		public premiseInit(endPoint:string, gameID:number, appkey:string):number{
+			let res = this._engine.premiseInit( MsResponse.getInstance.getResponse(),endPoint, gameID, appkey);
 			if (res !== 0){
 				console.info("[MsEngine premiseInit failed] resCode:",res);
 				return res;
@@ -56,8 +56,8 @@ module mvs {
 		 * @param {string} appkey 游戏 appkey
 		 * @param {string} secretkey 游戏 secretkey
 		 */
-		public login(userID:number, token:string, gameID:number, appkey:string, secretkey:string):number{
-			let res = this._engine.login(userID,token,gameID,1,appkey,secretkey,"eglejjddg",0);
+		public login(userID:number, token:string):number{
+			let res = this._engine.login(userID,token,"eglejjddg");
 			console.info("[MsEngine login] resCode:",res);
 			return res;
 		}

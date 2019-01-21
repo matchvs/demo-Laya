@@ -249,7 +249,7 @@ module mvs {
 		private setFrameSyncResponse(rsp:MsSetChannelFrameSyncRsp){
 			//console.info("[setFrameSyncResponse] "+JSON.stringify(rsp));
 			let data = {
-				status:rsp.mStatus
+				status:rsp.status
 			};
 			this.event(MsEvent.EVENT_SETFRAMESYNC_RSP, new MsEventData(data));
 		}

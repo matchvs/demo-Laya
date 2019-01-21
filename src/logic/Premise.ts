@@ -50,7 +50,7 @@ class Premise extends ui.PremiseUI{
             console.info("初始化成功！");
             GameData.myUser.userID = Number(this.txt_userID.text);
             GameData.myUser.token = this.txt_token.text; 
-            let res = mvs.MsEngine.getInstance.login(GameData.myUser.userID, GameData.myUser.token, MsConfig.preGameID, MsConfig.appKey, MsConfig.secretKey);
+            let res = mvs.MsEngine.getInstance.login(GameData.myUser.userID, GameData.myUser.token);
             if(res != 0){
                 console.log("登录失败：", res);
             }
@@ -83,7 +83,7 @@ class Premise extends ui.PremiseUI{
     }
 
     private btnOkClick(e:Laya.Event){
-        mvs.MsEngine.getInstance.premiseInit(this.txt_endPoint.text, Number(this.txt_gameID.text));
+        mvs.MsEngine.getInstance.premiseInit(this.txt_endPoint.text, Number(this.txt_gameID.text), this.txt_appKey.text);
     }
 
     private btn_backClick(e:Laya.Event){
