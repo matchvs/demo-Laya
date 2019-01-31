@@ -1,6 +1,6 @@
-# Matchvs demo_laya
+# jdge demo_laya
 
-demo 是使用  LayaAir TypeScript 实现。演示了 matchvs sdk 在laya 中使用方法。集成 matchvs sdk 接口实现了注册、登录、创建房间、加入房间、踢人、同步游戏逻辑、断线重连等等主要功能。
+demo 是使用  LayaAir TypeScript 实现。演示了 jdge sdk 在laya 中使用方法。集成 jdge sdk 接口实现了注册、登录、创建房间、加入房间、踢人、同步游戏逻辑、断线重连等等主要功能。
 
 ## 环境搭建
 
@@ -8,10 +8,9 @@ demo 是使用  LayaAir TypeScript 实现。演示了 matchvs sdk 在laya 中使
 
 请到 [Laya官网](http://ldc.layabox.com/layadownload/?type=layaairide) 下载。下载好LayaAir 后解压到自定义目录即可(LayaAir 引擎 TypeScript版集成到了 IDE 中，不用另外下载LayaAir Engine)。
 
-### 下载 Matchvs demo_laya
+### 下载 jdge demo_laya
 
-- [gitHub](https://github.com/matchvs/demo-Laya)
-- [Matchvs官网](http://www.matchvs.com/serviceDownload)
+- [jdge官网](http://home-ge.matrix.jdcloud.com/serviceDownload)
 
 获取到 demo_laya 项目直接使用LayaAirIDE 打开即可运行。
 
@@ -36,9 +35,9 @@ demo_laya
 		matchvs.d.ts
 ```
 
-> 注意：demo_laya 默认带有 matchvs sdk 文件的，如果没有，请自行下载或者要获取最新的 matchvs_sdk 请到 [Matchvs官网](http://www.matchvs.com/serviceDownload) 下载。 
+> 注意：demo_laya 默认带有 jdge sdk 文件的，如果没有，请自行下载或者要获取最新的 jdge sdk 请到 [jdge官网](http://home-ge.matrix.jdcloud.com/serviceDownload) 下载。 
 
-配置好 matchvs sdk 后，需要到 bin/index.html 中使用 matchvs 库，不然会出现 matchvs 中的变量未定义问题。如下图：
+配置好 jdge sdk 后，需要到 bin/index.html 中使用 jdge 库，不然会出现 jdge 中的变量未定义问题。如下图：
 
 ![./img/laya_demo1](http://imgs.matchvs.com/static/Laya/quickStartDoc/laya_demo4.png)
 
@@ -73,11 +72,11 @@ class GameData{
 }
 ```
 
-- matchvs : 是有关 matchvs 平台的配置 和 matchvs sdk 集成，集成的这个matchvs模块开发者可以直接拷贝该模块的内容使用到其他的 laya 项目中，是可以直接复用的，开发者拿到demo可以 把 MsConfig 文件下的游戏信息改为开发者 在 [Matchvs官网注册的游戏信息](http://matchvs.com/manage/gameContentList) 。
+- jdge : 是有关 jdge 平台的配置 和 jdge sdk 集成，集成的这个jdge模块开发者可以直接拷贝该模块的内容使用到其他的 laya 项目中，是可以直接复用的，开发者拿到demo可以 把 MsConfig 文件下的游戏信息改为开发者 在 [jdge官网注册的游戏信息](http://home-ge.matrix.jdcloud.com/manage/gameContentList) 。
 
 ```typescript
 class MsConfig{
-    public static channel:string = "Matchvs"; //渠道
+    public static channel:string = "jdge"; //渠道
     public static PLATFROM_TYPE:PlatformType = new PlatformType("alpha","release");//环境
     public static platfrom:string = MsConfig.PLATFROM_TYPE.alp;
     public static gameID:number = 201489;//游戏ID
@@ -88,7 +87,7 @@ class MsConfig{
 }
 ```
 
-- matchvs sdk 集成模块，由 MsEngine 、MsError 、MsEvent、 和 MsResponse 组成。这个模块是采用 事件触发机制，使用者只要 监听相关接口的回调事件就可以获取到回调信息，后面会展示使用方法。
+- jdge sdk 集成模块，由 MsEngine 、MsError 、MsEvent、 和 MsResponse 组成。这个模块是采用 事件触发机制，使用者只要 监听相关接口的回调事件就可以获取到回调信息，后面会展示使用方法。
 
 ```
  MsEngine: 引用 sdk MatchvsEngine
@@ -102,15 +101,15 @@ class MsConfig{
 
 ## demo 代码示例介绍
 
-开发者配置好 MsConfig 文件的游戏信息和 确认 matchvs sdk 已经集成到项目中，就可以运行demo啦。界面展示如下：
+开发者配置好 MsConfig 文件的游戏信息和 确认 jdge sdk 已经集成到项目中，就可以运行demo啦。界面展示如下：
 
 - 登录界面
 
-![](http://imgs.matchvs.com/static/Laya/quickStartDoc/laya_demo5.png)
+![](./img.Assets/demo_laya_login.png)
 
 - 匹配界面
 
-![](http://imgs.matchvs.com/static/Laya/quickStartDoc/laya_demo6.png)
+![](./img.Assets/demo_laya_match.png)
 
 
 
@@ -118,16 +117,16 @@ class MsConfig{
 
 这两个文件是 sdk 集成的重要文件 MsEngine 是SDK 请求函数封装，MsResponse 是SDK 回调函数封装。两个都是单例类型。接口调用 采用  MsEngine.getInstance.xxxx 的格式即可。MsResponse 是获取到回调后，会触发MsEvnet 自定义的事件，开发者可以根据自己需要修改定义的事件。MsResponse 事件监听格式采用 mvs.MsResponse.getInstance.on(mvs.MsEvent.XXXXX, this, this.Function); 
 
-- MsEngine.ts :该文件集成了 matchvs sdk 的 MatchvsEngine  类接口。源码如下：
+- MsEngine.ts :该文件集成了 jdge sdk 的 MatchvsEngine  类接口。源码如下：
 
 ```typescript
 module mvs {
 	/**
-	 * 这个是 matchvs 引擎 接口封装模块，对引擎的所有请求接口进行了二次封装，一些接口调用的参数可以在这里组合
+	 * 这个是 jdge 引擎 接口封装模块，对引擎的所有请求接口进行了二次封装，一些接口调用的参数可以在这里组合
 	 */
 	export class MsEngine {
 		private static _instance = null;
-		private _engine:MatchvsEngine = null; //Matchvs SDK 引擎 类
+		private _engine:MatchvsEngine = null; //jdge SDK 引擎 类
 		public constructor() {  //这里public 可以写成 private 
 			this._engine = new MatchvsEngine();
 		}
@@ -145,7 +144,7 @@ module mvs {
 }
 ```
 
-- MsResponse : matchvs 回调封装，收到数据后，采用Event触发方式发出消息。在 registResponseCall 函数里重新对 MatchvsResponse 回调接口映射。
+- MsResponse : jdge 回调封装，收到数据后，采用Event触发方式发出消息。在 registResponseCall 函数里重新对 MatchvsResponse 回调接口映射。
 
 ```typescript
 /**
@@ -157,7 +156,7 @@ module mvs {
 	import Event = Laya.Event;
 	export class MsResponse extends Sprite{
 		private static _instance:MsResponse = null;
-		private _response:MatchvsResponse = null; //Matchvs SDK 引擎 MatchvsResponse 类
+		private _response:MatchvsResponse = null; //jdge SDK 引擎 MatchvsResponse 类
 		public constructor() {//这里public 可以写成 private 
 			super();
 			this.registResponseCall();
@@ -203,7 +202,7 @@ module mvs {
 
 #### 初始化
 
-- matchvs 初始化(init):  调用 MsEvent 类的初始化接口，MsResponse 收到 initResponse 
+- jdge 初始化(init):  调用 MsEvent 类的初始化接口，MsResponse 收到 initResponse 
 
 ```typescript
 // MvEvent.ts 初始化
@@ -231,7 +230,7 @@ private initResponse(status:number){
 ```typescript
 //demo_laya/src/logic/Login.ts
 /**
- * 打开 matchvs 事件监听, MsResponse 回调监听
+ * 打开 jdge 事件监听, MsResponse 回调监听
  */
 private addMvsListener(){
     // 初始化监听
@@ -240,7 +239,7 @@ private addMvsListener(){
 }
 
 /**
- * 移除 matchvs 事件监听， MsResponse 回调监听
+ * 移除 jdge 事件监听， MsResponse 回调监听
  */
 private removeMvsListener(){
     mvs.MsResponse.getInstance.off(mvs.MsEvent.EVENT_INIT_RSP, this, this.initResponse);
@@ -249,7 +248,7 @@ private removeMvsListener(){
 
 private btnOkClick(e:Laya.Event){
     /**
-     * set matchvs 初始化需要的信息
+     * set jdge 初始化需要的信息
      */
     this.setMsConfigInfo();
     // 调用 MsEngine 的 初始化函数
@@ -296,7 +295,7 @@ private addMvsListener(){
 }
 
 /**
- * 移除 matchvs 事件监听， MsResponse 回调监听
+ * 移除 jdge 事件监听， MsResponse 回调监听
  */
 private removeMvsListener(){
    mvs.MsResponse.getInstance.off(mvs.MsEvent.EVENT_REGISTERUSER_RSP,this, this.registUserResponse);
@@ -351,7 +350,7 @@ private addMvsListener(){
 }
 
 /**
- * 移除 matchvs 事件监听， MsResponse 回调监听
+ * 移除 jdge 事件监听， MsResponse 回调监听
  */
 private removeMvsListener(){
     mvs.MsResponse.getInstance.off(mvs.MsEvent.EVENT_LOGIN_RSP,this, this.loginResponse);
@@ -441,7 +440,7 @@ private addMvsListener(){
 }
 
 /**
- * 移除 matchvs 事件监听， MsResponse 回调监听
+ * 移除 jdge 事件监听， MsResponse 回调监听
  */
 private removeMvsListener(){
     mvs.MsResponse.getInstance.off(mvs.MsEvent.EVENT_JOINROOM_RSP,this, this.joinRoomRsp);
@@ -535,6 +534,5 @@ private errorResponse(e:mvs.MsEventData){
 
 ### 更多
 
-- 更多资料请参考 [matchvs 官网 文档](http://matchvs.com/service)
-- QQ 群技术支持：450335262
-- FAQ 参考 [官方FAQ](http://matchvs.com/serviceRetrieval/FAQList)
+- 更多资料请参考 [jdge官网文档](http://doc-ge.matrix.jdcloud.com/Jdge)
+- 有疑问可以在控制台发送工单或发邮件咨询 ：hanyongxiang@jd.com
