@@ -2,7 +2,7 @@
     "x":0,
     "type":"View",
     "selectedBox":1,
-    "selecteID":31,
+    "selecteID":20,
     "props":{"width":1280,"sceneColor":"#359be0","height":720,"alpha":1},
     "nodeParent":-1,
     "label":"View",
@@ -135,7 +135,7 @@
         {
             "x":15,
             "type":"Label",
-            "props":{"y":51,"x":423,"width":431,"text":"MatchvsDemo-Laya","height":51,"fontSize":42,"font":"Microsoft YaHei","color":"#ffffff","bold":false,"align":"center"},
+            "props":{"y":51,"x":421,"width":431,"text":"Demo-Laya","height":51,"fontSize":42,"font":"Microsoft YaHei","color":"#ffffff","bold":false,"align":"center"},
             "nodeParent":1,
             "label":"Label",
             "isDirectory":false,
